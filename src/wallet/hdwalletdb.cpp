@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 The Particl Core developers
+// Copyright (c) 2017-2018 The Rhombus Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -198,17 +198,6 @@ bool CHDWalletDB::WriteAddressBookEntry(const std::string &sKey, const CAddressB
 bool CHDWalletDB::EraseAddressBookEntry(const std::string &sKey)
 {
     return EraseIC(std::make_pair(std::string("abe"), sKey));
-};
-
-
-bool CHDWalletDB::ReadVoteTokens(std::vector<CVoteToken> &vVoteTokens, uint32_t nFlags)
-{
-    return m_batch.Read(std::string("votes"), vVoteTokens, nFlags);
-};
-
-bool CHDWalletDB::WriteVoteTokens(const std::vector<CVoteToken> &vVoteTokens)
-{
-    return WriteIC(std::string("votes"), vVoteTokens, true);
 };
 
 

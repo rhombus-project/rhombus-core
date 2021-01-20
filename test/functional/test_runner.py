@@ -72,9 +72,9 @@ EXTENDED_SCRIPTS = [
     'feature_pruning.py',
     'feature_dbcrash.py',
 
-    'wallet_part_unloadspent.py',
-    'p2p_part_dos.py',
-    'feature_part_smsgpaidfee_ext.py',
+    'wallet_rhom_unloadspent.py',
+    'p2p_rhom_dos.py',
+    'feature_rhom_smsgpaidfee_ext.py',
 ]
 
 BASE_SCRIPTS = [
@@ -219,35 +219,35 @@ BASE_SCRIPTS = [
     # Put them in a random line within the section that fits their approximate run-time
 ]
 
-PARTICL_SCRIPTS = [
-    'p2p_part_fork.py',
-    'feature_part_pos.py',
-    'feature_part_extkey.py',
-    'feature_part_stealth.py',
-    'feature_part_blind.py',
-    'feature_part_anon.py',
-    'wallet_part_particl.py',
-    'rpc_part_mnemonic.py',
-    'feature_part_smsg.py',
-    'feature_part_smsgpaid.py',
-    'feature_part_smsgpaidfee.py',
-    'wallet_part_multisig.py',
-    'wallet_part_multiwallet.py',
-    'feature_part_coldstaking.py',
-    'rpc_part_filtertransactions.py',
-    'feature_part_vote.py',
-    'feature_part_zmq_test.py',
-    'rpc_part_wallet.py',
-    'feature_part_usbdevice.py',
-    'wallet_part_watchonly.py',
-    'rpc_part_atomicswap.py',
-    'rpc_part_signmessage.py',
-    'wallet_part_avoidreuse.py',
-    'wallet_part_segwit_scripts.py',
+RHOMBUS_SCRIPTS = [
+    'p2p_rhom_fork.py',
+    'feature_rhom_pos.py',
+    'feature_rhom_extkey.py',
+    'feature_rhom_stealth.py',
+    'feature_rhom_blind.py',
+    'feature_rhom_anon.py',
+    'wallet_rhom_rhombus.py',
+    'rpc_rhom_mnemonic.py',
+    'feature_rhom_smsg.py',
+    'feature_rhom_smsgpaid.py',
+    'feature_rhom_smsgpaidfee.py',
+    'wallet_rhom_multisig.py',
+    'wallet_rhom_multiwallet.py',
+    'feature_rhom_coldstaking.py',
+    'rpc_rhom_filtertransactions.py',
+    'feature_rhom_vote.py',
+    'feature_rhom_zmq_test.py',
+    'rpc_rhom_wallet.py',
+    'feature_rhom_usbdevice.py',
+    'wallet_rhom_watchonly.py',
+    'rpc_rhom_atomicswap.py',
+    'rpc_rhom_signmessage.py',
+    'wallet_rhom_avoidreuse.py',
+    'wallet_rhom_segwit_scripts.py',
 ]
 
-PARTICL_SCRIPTS_EXT = [
-    'feature_part_smsg_multiwallet.py',
+RHOMBUS_SCRIPTS_EXT = [
+    'feature_rhom_smsg_multiwallet.py',
 ]
 
 INSIGHT_SCRIPTS = [
@@ -259,7 +259,7 @@ INSIGHT_SCRIPTS = [
 ]
 
 # Place EXTENDED_SCRIPTS first since it has the 3 longest running tests
-ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS + PARTICL_SCRIPTS + INSIGHT_SCRIPTS + PARTICL_SCRIPTS_EXT
+ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS + RHOMBUS_SCRIPTS + INSIGHT_SCRIPTS + RHOMBUS_SCRIPTS_EXT
 
 NON_SCRIPTS = [
     # These are python files that live in the functional tests directory, but are not test scripts.
@@ -285,8 +285,8 @@ def main():
     parser.add_argument('--exclude', '-x', help='specify a comma-separated-list of scripts to exclude.')
     parser.add_argument('--extended', action='store_true', help='run the extended test suite in addition to the basic tests')
     parser.add_argument('--bitcoin', action='store_true', help='run Bitcoin specific tests')
-    parser.add_argument('--particl', action='store_true', help='run Particl specific tests')
-    parser.add_argument('--particlext', action='store_true', help='run Particl extended tests')
+    parser.add_argument('--rhombus', action='store_true', help='run Rhombus specific tests')
+    parser.add_argument('--rhombusext', action='store_true', help='run Rhombus extended tests')
     parser.add_argument('--insight', action='store_true', help='run Insight specific tests')
     parser.add_argument('--withstdout', action='store_true', help='print stdout when test passed also')
     parser.add_argument('--help', '-h', '-?', action='store_true', help='print help text and exit')
@@ -322,7 +322,7 @@ def main():
     logging.basicConfig(format='%(message)s', level=logging_level)
 
     # Create base test directory
-    tmpdir = "%s/particl_test_runner_P_🏃_%s" % (args.tmpdirprefix, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    tmpdir = "%s/rhombus_test_runner_P_🏃_%s" % (args.tmpdirprefix, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
 
     os.makedirs(tmpdir)
 
@@ -366,14 +366,14 @@ def main():
         test_list = []
         if args.extended:
             test_list += EXTENDED_SCRIPTS
-        if args.particl:
-            test_list += PARTICL_SCRIPTS
+        if args.rhombus:
+            test_list += RHOMBUS_SCRIPTS
         if args.insight:
             test_list += INSIGHT_SCRIPTS
         if args.bitcoin:
             test_list += BASE_SCRIPTS
-        if args.particlext:
-            test_list += PARTICL_SCRIPTS_EXT
+        if args.rhombusext:
+            test_list += RHOMBUS_SCRIPTS_EXT
 
     # Remove the test cases that the user has explicitly asked to exclude.
     if args.exclude:
@@ -418,7 +418,7 @@ def main():
         failfast=args.failfast,
         runs_ci=args.ci,
         use_term_control=args.ansi,
-        create_cache=(True if args.bitcoin or (not args.particl and not args.insight) else False)
+        create_cache=(True if args.bitcoin or (not args.rhombus and not args.insight) else False)
     )
 
 def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=False, args=None, combined_logs_len=0, failfast=False, runs_ci, use_term_control, create_cache=True):

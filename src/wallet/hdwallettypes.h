@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2019 The Particl Core developers
+// Copyright (c) 2017-2019 The Rhombus Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_WALLET_HDWALLETTYPES_H
-#define PARTICL_WALLET_HDWALLETTYPES_H
+#ifndef RHOMBUS_WALLET_HDWALLETTYPES_H
+#define RHOMBUS_WALLET_HDWALLETTYPES_H
 
 #include <key_io.h>
 #include <key/extkey.h>
@@ -296,5 +296,5 @@ public:
     //CAmount nBlindUsed = 0;
 };
 
-#endif // PARTICL_WALLET_HDWALLETTYPES_H
+#endif // RHOMBUS_WALLET_HDWALLETTYPES_H
 

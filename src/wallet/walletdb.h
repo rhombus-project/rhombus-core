@@ -80,12 +80,12 @@ extern const std::string VERSION;
 extern const std::string WATCHMETA;
 extern const std::string WATCHS;
 
-extern const std::string PART_EXTACC;
-extern const std::string PART_EXTKEY;
-extern const std::string PART_EXTKEYNAMED;
-extern const std::string PART_SXADDR;
-extern const std::string PART_SXADDRKEYPACK;
-extern const std::string PART_LOCKEDUTXO;
+extern const std::string RHOM_EXTACC;
+extern const std::string RHOM_EXTKEY;
+extern const std::string RHOM_EXTKEYNAMED;
+extern const std::string RHOM_SXADDR;
+extern const std::string RHOM_SXADDRKEYPACK;
+extern const std::string RHOM_LOCKEDUTXO;
 } // namespace DBKeys
 
 /* simple HD chain data model */

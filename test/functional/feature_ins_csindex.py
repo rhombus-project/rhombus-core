@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-# Copyright (c) 2019 The Particl Core developers
+# Copyright (c) 2019 The Rhombus Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 import json
 
-from test_framework.test_particl import ParticlTestFramework, connect_nodes_bi
+from test_framework.test_rhombus import RhombusTestFramework, connect_nodes_bi
 from test_framework.authproxy import JSONRPCException
 
 
-class TxIndexTest(ParticlTestFramework):
+class TxIndexTest(RhombusTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
@@ -62,13 +62,13 @@ class TxIndexTest(ParticlTestFramework):
         self.stakeBlocks(1)
 
         toScript = nodes[1].buildscript({'recipe': 'ifcoinstake', 'addrstake': addrStake, 'addrspend': addrSpend})
-        nodes[1].sendtypeto('part', 'part',
+        nodes[1].sendtypeto('rhom', 'rhom',
                             [{'address': 'script', 'amount':12000, 'script':toScript['hex']},
                              {'address': 'script', 'amount':12000, 'script':toScript['hex']}])
 
         addrStake2_stakeonly = nodes[1].validateaddress(addrStake2, True)['stakeonly_address']
         toScript = nodes[1].buildscript({'recipe': 'ifcoinstake', 'addrstake': addrStake2_stakeonly, 'addrspend': addrSpend2})
-        nodes[1].sendtypeto('part', 'part',
+        nodes[1].sendtypeto('rhom', 'rhom',
                             [{'address': 'script', 'amount':12, 'script':toScript['hex']}])
 
         try:
@@ -78,7 +78,7 @@ class TxIndexTest(ParticlTestFramework):
             assert('Invalid address' in e.error['message'])
 
         try:
-            nodes[1].sendtypeto('part', 'part',
+            nodes[1].sendtypeto('rhom', 'rhom',
                                 [{'address': addrStake2_stakeonly, 'amount':12}])
             assert(False), 'Sent to stakeonly address'
         except JSONRPCException as e:

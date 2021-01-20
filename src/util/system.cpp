@@ -70,10 +70,10 @@
 // Application startup time (used for uptime calculation)
 const int64_t nStartupTime = GetTime();
 
-const char * const BITCOIN_CONF_FILENAME = "particl.conf";
+const char * const BITCOIN_CONF_FILENAME = "rhombus.conf";
 
-bool fParticlMode = true;
-bool fParticlWallet = false;
+bool fRhombusMode = true;
+bool fRhombusWallet = false;
 ArgsManager gArgs;
 
 /** A map that contains all the currently held directory locks. After
@@ -835,10 +835,10 @@ std::string ArgsManager::GetHelpMessage() const
             case OptionsCategory::SMSG:
                 usage += HelpMessageGroup("SMSG Commands:");
                 break;
-            case OptionsCategory::PART_WALLET:
-                usage += HelpMessageGroup("Particl wallet Commands:");
+            case OptionsCategory::RHOM_WALLET:
+                usage += HelpMessageGroup("Rhombus wallet Commands:");
                 break;
-            case OptionsCategory::PART_STAKING:
+            case OptionsCategory::RHOM_STAKING:
                 usage += HelpMessageGroup("Staking Commands:");
                 break;
             default:
@@ -895,7 +895,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(nullptr, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "particl";
+    const char* pszModule = "rhombus";
 #endif
     if (pex)
         return strprintf(
@@ -914,13 +914,13 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 
 fs::path GetDefaultDataDir()
 {
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Particl
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Particl
-    // Mac: ~/Library/Application Support/Particl
-    // Unix: ~/.particl
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Rhombus
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Rhombus
+    // Mac: ~/Library/Application Support/Rhombus
+    // Unix: ~/.rhombus
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Particl";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Rhombus";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -930,10 +930,10 @@ fs::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/Particl";
+    return pathRet / "Library/Application Support/Rhombus";
 #else
     // Unix
-    return pathRet / ".particl";
+    return pathRet / ".rhombus";
 #endif
 #endif
 }
@@ -1428,9 +1428,9 @@ int GetNumCores()
 std::string CopyrightHolders(const std::string& strPrefix)
 {
     const int BTC_START_YEAR = 2009;
-    const int PART_START_YEAR = 2017;
+    const int RHOM_START_YEAR = 2017;
 
-    std::string sRange = strprintf(" %i-%i ", PART_START_YEAR, COPYRIGHT_YEAR);
+    std::string sRange = strprintf(" %i-%i ", RHOM_START_YEAR, COPYRIGHT_YEAR);
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS).translated, COPYRIGHT_HOLDERS_SUBSTITUTION);
     std::string strCopyrightHolders = strPrefix + sRange + copyright_devs;
 

@@ -34,7 +34,7 @@ const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
 
 FastRandomContext g_insecure_rand_ctx;
 
-extern bool fParticlMode;
+extern bool fRhombusMode;
 
 std::ostream& operator<<(std::ostream& os, const uint256& num)
 {
@@ -42,16 +42,16 @@ std::ostream& operator<<(std::ostream& os, const uint256& num)
     return os;
 }
 
-BasicTestingSetup::BasicTestingSetup(const std::string& chainName, bool fParticlModeIn)
+BasicTestingSetup::BasicTestingSetup(const std::string& chainName, bool fRhombusModeIn)
     : m_path_root(fs::temp_directory_path() / "test_common_" PACKAGE_NAME / strprintf("%lu_%i", (unsigned long)GetTime(), (int)(InsecureRandRange(1 << 30))))
 {
-    fParticlMode = fParticlModeIn;
+    fRhombusMode = fRhombusModeIn;
 
     fs::create_directories(m_path_root);
     gArgs.ForceSetArg("-datadir", m_path_root.string());
     ClearDatadirCache();
     SelectParams(chainName);
-    ResetParams(chainName, fParticlMode);
+    ResetParams(chainName, fRhombusMode);
     gArgs.ForceSetArg("-printtoconsole", "0");
     InitLogging();
     LogInstance().StartLogging();
@@ -77,7 +77,7 @@ BasicTestingSetup::~BasicTestingSetup()
     ECC_Stop();
 }
 
-TestingSetup::TestingSetup(const std::string& chainName, bool fParticlModeIn) : BasicTestingSetup(chainName, fParticlModeIn)
+TestingSetup::TestingSetup(const std::string& chainName, bool fRhombusModeIn) : BasicTestingSetup(chainName, fRhombusModeIn)
 {
     const CChainParams& chainparams = Params();
     // Ideally we'd move all the RPC tests to the functional testing framework
@@ -133,7 +133,7 @@ TestChain100Setup::TestChain100Setup() : TestingSetup(CBaseChainParams::REGTEST)
     // TODO: fix the code to support SegWit blocks.
     gArgs.ForceSetArg("-segwitheight", "432");
     SelectParams(CBaseChainParams::REGTEST);
-    ResetParams(CBaseChainParams::REGTEST, fParticlMode);
+    ResetParams(CBaseChainParams::REGTEST, fRhombusMode);
 
     // Generate a 100-block chain:
     coinbaseKey.MakeNewKey(true);

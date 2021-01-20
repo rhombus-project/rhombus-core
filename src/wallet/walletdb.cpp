@@ -48,12 +48,12 @@ const std::string VERSION{"version"};
 const std::string WATCHMETA{"watchmeta"};
 const std::string WATCHS{"watchs"};
 
-const std::string PART_EXTACC{"eacc"};
-const std::string PART_EXTKEY{"ek32"};
-const std::string PART_EXTKEYNAMED{"eknm"};
-const std::string PART_SXADDR{"sxad"};
-const std::string PART_SXADDRKEYPACK{"espk"};
-const std::string PART_LOCKEDUTXO{"luo"};
+const std::string RHOM_EXTACC{"eacc"};
+const std::string RHOM_EXTKEY{"ek32"};
+const std::string RHOM_EXTKEYNAMED{"eknm"};
+const std::string RHOM_SXADDR{"sxad"};
+const std::string RHOM_SXADDRKEYPACK{"espk"};
+const std::string RHOM_LOCKEDUTXO{"luo"};
 } // namespace DBKeys
 
 //
@@ -319,7 +319,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 strErr = "Error reading wallet database: LoadKey failed";
                 return false;
             }
-        } else if (strType == DBKeys::MASTER_KEY && !fParticlMode) {
+        } else if (strType == DBKeys::MASTER_KEY && !fRhombusMode) {
             unsigned int nID;
             ssKey >> nID;
             CMasterKey kMasterKey;
@@ -412,7 +412,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         } else if (strType == DBKeys::OLD_KEY) {
             strErr = "Found unsupported 'wkey' record, try loading with version 0.18";
             return false;
-        } else if (strType == DBKeys::PART_LOCKEDUTXO) {
+        } else if (strType == DBKeys::RHOM_LOCKEDUTXO) {
             COutPoint output;
             ssKey >> output;
             pwallet->LockCoin(output);
@@ -439,9 +439,9 @@ bool WalletBatch::IsKeyType(const std::string& strType)
 {
     return (strType == DBKeys::KEY ||
             strType == DBKeys::MASTER_KEY || strType == DBKeys::CRYPTED_KEY)
-            || (fParticlMode &&
-                (strType == DBKeys::PART_EXTACC || strType == DBKeys::PART_EXTKEY
-                || strType == DBKeys::PART_EXTKEYNAMED || strType == DBKeys::PART_SXADDR || strType == DBKeys::PART_SXADDRKEYPACK));
+            || (fRhombusMode &&
+                (strType == DBKeys::RHOM_EXTACC || strType == DBKeys::RHOM_EXTKEY
+                || strType == DBKeys::RHOM_EXTKEYNAMED || strType == DBKeys::RHOM_SXADDR || strType == DBKeys::RHOM_SXADDRKEYPACK));
 }
 
 DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
@@ -726,7 +726,7 @@ bool WalletBatch::RecoverKeysOnlyFilter(void *callbackData, CDataStream &ssKey, 
     std::string strType, strErr;
 
     bool fReadOK;
-    if (fParticlMode) {
+    if (fRhombusMode) {
         try {
             ssKey >> strType;
         } catch (...) {
@@ -748,7 +748,7 @@ bool WalletBatch::RecoverKeysOnlyFilter(void *callbackData, CDataStream &ssKey, 
         return false;
     }
 
-    if (strType == DBKeys::PART_EXTACC) {
+    if (strType == DBKeys::RHOM_EXTACC) {
         CExtKeyAccount sea;
         try {
             ssValue >> sea;
@@ -761,7 +761,7 @@ bool WalletBatch::RecoverKeysOnlyFilter(void *callbackData, CDataStream &ssKey, 
         ssValue.clear();
         ssValue << sea;
     }
-    if (strType == DBKeys::PART_EXTKEY) {
+    if (strType == DBKeys::RHOM_EXTKEY) {
         CStoredExtKey sek;
         try {
             ssValue >> sek;

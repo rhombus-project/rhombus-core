@@ -122,7 +122,7 @@ bool SequenceLocks(const CTransaction &tx, int flags, std::vector<int>* prevHeig
 unsigned int GetLegacySigOpCount(const CTransaction& tx)
 {
     unsigned int nSigOps = 0;
-    if (!tx.IsParticlVersion())
+    if (!tx.IsRhombusVersion())
     {
         for (const auto& txin : tx.vin)
         {
@@ -326,7 +326,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
     if (::GetSerializeSize(tx, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * WITNESS_SCALE_FACTOR > MAX_BLOCK_WEIGHT)
         return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-oversize");
 
-    if (tx.IsParticlVersion()) {
+    if (tx.IsRhombusVersion()) {
         const Consensus::Params& consensusParams = Params().GetConsensus();
         if (tx.vpout.empty()) {
             return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-vpout-empty");
@@ -380,7 +380,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
             return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "too-many-data-outputs");
         }
     } else {
-        if (fParticlMode) {
+        if (fRhombusMode) {
             return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txn-version");
         }
         if (tx.vout.empty()) {
@@ -434,8 +434,8 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
     state.fHasAnonOutput = false;
     state.fHasAnonInput = false;
 
-    bool is_particl_tx = tx.IsParticlVersion();
-    if (is_particl_tx && tx.vin.size() < 1) { // early out
+    bool is_rhombus_tx = tx.IsRhombusVersion();
+    if (is_rhombus_tx && tx.vin.size() < 1) { // early out
         return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txn-no-inputs",
                          strprintf("%s: no inputs", __func__));
     }
@@ -467,7 +467,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         {
             if (nSpendHeight - coin.nHeight < COINBASE_MATURITY)
             {
-                if (is_particl_tx) {
+                if (is_rhombus_tx) {
                     // Scale in the depth restriction to start the chain
                     int nRequiredDepth = std::min(COINBASE_MATURITY, (int)(coin.nHeight / 2));
                     if (nSpendHeight - coin.nHeight < nRequiredDepth) {
@@ -482,7 +482,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         }
 
         // Check for negative or overflow input values
-        if (is_particl_tx) {
+        if (is_rhombus_tx) {
             if (coin.nType == OUTPUT_STANDARD) {
                 nValueIn += coin.out.nValue;
                 if (!MoneyRange(coin.out.nValue) || !MoneyRange(nValueIn)) {
@@ -514,7 +514,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
     state.fHasAnonOutput = nRingCT > nRingCTInputs;
 
     txfee = 0;
-    if (is_particl_tx) {
+    if (is_rhombus_tx) {
         if (!tx.IsCoinStake()) {
             // Tally transaction fees
             if (nCt > 0 || nRingCT > 0) {

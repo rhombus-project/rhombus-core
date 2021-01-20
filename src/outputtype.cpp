@@ -66,7 +66,7 @@ std::vector<CTxDestination> GetAllDestinationsForKey(const CPubKey& key)
 {
     PKHash keyid(key);
     if (key.IsCompressed()) {
-        if (fParticlMode)
+        if (fRhombusMode)
             return std::vector<CTxDestination>{std::move(keyid)};
         CTxDestination segwit = WitnessV0KeyHash(keyid);
         CTxDestination p2sh = ScriptHash(GetScriptForDestination(segwit));

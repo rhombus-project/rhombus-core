@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2019 The Particl Core developers
+// Copyright (c) 2017-2019 The Rhombus Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_WALLET_HDWALLET_H
-#define PARTICL_WALLET_HDWALLET_H
+#ifndef RHOMBUS_WALLET_HDWALLET_H
+#define RHOMBUS_WALLET_HDWALLET_H
 
 #include <wallet/wallet.h>
 #include <wallet/hdwalletdb.h>
@@ -72,7 +72,7 @@ class CHDWallet : public CWallet
 public:
     CHDWallet(interfaces::Chain* chain, const WalletLocation& location, std::unique_ptr<WalletDatabase> dbw_in) : CWallet(chain, location, std::move(dbw_in))
     {
-        m_default_address_type = OutputType::LEGACY; // In Particl segwit is enabled for all types
+        m_default_address_type = OutputType::LEGACY; // In Rhombus segwit is enabled for all types
     }
 
     ~CHDWallet()
@@ -103,9 +103,6 @@ public:
     bool LoadJson(const UniValue &inj, std::string &sError);
 
     bool LoadAddressBook(CHDWalletDB *pwdb);
-
-    bool LoadVoteTokens(CHDWalletDB *pwdb);
-    bool GetVote(int nHeight, uint32_t &token);
 
     bool LoadTxRecords(CHDWalletDB *pwdb);
 
@@ -495,8 +492,6 @@ public:
     RtxOrdered_t rtxOrdered;
     mutable MapRecords_t mapTempRecords; // Hack for sending unmined inputs through fundrawtransactionfrom
 
-    std::vector<CVoteToken> vVoteTokens;
-
     // Staking Settings
     std::atomic<bool> fStakingEnabled{false};
     CAmount nStakeCombineThreshold;
@@ -576,10 +571,10 @@ int64_t CalculateMaximumSignedTxSize(const CTransaction &tx, const CHDWallet *wa
 
 void RestartStakingThreads();
 
-bool IsParticlWallet(const FillableSigningProvider *win);
-CHDWallet *GetParticlWallet(FillableSigningProvider *win);
-const CHDWallet *GetParticlWallet(const FillableSigningProvider *win);
+bool IsRhombusWallet(const FillableSigningProvider *win);
+CHDWallet *GetRhombusWallet(FillableSigningProvider *win);
+const CHDWallet *GetRhombusWallet(const FillableSigningProvider *win);
 
 
-#endif // PARTICL_WALLET_HDWALLET_H
+#endif // RHOMBUS_WALLET_HDWALLET_H
 

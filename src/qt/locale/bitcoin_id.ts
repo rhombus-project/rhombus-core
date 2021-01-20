@@ -66,8 +66,8 @@
         <translation>Alamat-alamat penerima</translation>
     </message>
     <message>
-        <source>These are your Particl addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Berikut ialah alamat-alamat Particl Anda yang digunakan untuk mengirimkan pembayaran. Selalu periksa jumlah dan alamat penerima sebelum mengirimkan koin.</translation>
+        <source>These are your Rhombus addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Berikut ialah alamat-alamat Rhombus Anda yang digunakan untuk mengirimkan pembayaran. Selalu periksa jumlah dan alamat penerima sebelum mengirimkan koin.</translation>
     </message>
     <message>
         <source>These are your Bitcoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.</source>
@@ -168,8 +168,8 @@
         <translation>Konfirmasi pengenkripsian dompet</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PARTICL&lt;/b&gt;!</source>
-        <translation>Peringatan: Jika Anda mengenkripsi dompet Anda dan lupa kata sandi Anda, Anda akan &lt;b&gt;KEHILANGAN SEMUA PARTICL ANDA&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR RHOMBUS&lt;/b&gt;!</source>
+        <translation>Peringatan: Jika Anda mengenkripsi dompet Anda dan lupa kata sandi Anda, Anda akan &lt;b&gt;KEHILANGAN SEMUA RHOMBUS ANDA&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -362,8 +362,8 @@
         <translation>Proxy di &lt;b&gt;aktifkan&lt;/b&gt;: %1</translation>
     </message>
     <message>
-        <source>Send coins to a Particl address</source>
-        <translation>Kirim koin ke alamat Particl</translation>
+        <source>Send coins to a Rhombus address</source>
+        <translation>Kirim koin ke alamat Rhombus</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -406,12 +406,12 @@
         <translation>Enkripsi private key yang dimiliki dompet Anda</translation>
     </message>
     <message>
-        <source>Sign messages with your Particl addresses to prove you own them</source>
-        <translation>Tanda tangani sebuah pesan menggunakan alamat Particl Anda untuk membuktikan bahwa Anda adalah pemilik alamat tersebut</translation>
+        <source>Sign messages with your Rhombus addresses to prove you own them</source>
+        <translation>Tanda tangani sebuah pesan menggunakan alamat Rhombus Anda untuk membuktikan bahwa Anda adalah pemilik alamat tersebut</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Particl addresses</source>
-        <translation>Verifikasi pesan untuk memastikan bahwa pesan tersebut ditanda tangani oleh suatu alamat Particl tertentu</translation>
+        <source>Verify messages to ensure they were signed with specified Rhombus addresses</source>
+        <translation>Verifikasi pesan untuk memastikan bahwa pesan tersebut ditanda tangani oleh suatu alamat Rhombus tertentu</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -430,8 +430,8 @@
         <translation>Baris tab</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and particl: URIs)</source>
-        <translation>Permintaan pembayaran (membuat kode QR dan particl: URIs)</translation>
+        <source>Request payments (generates QR codes and rhombus: URIs)</source>
+        <translation>Permintaan pembayaran (membuat kode QR dan rhombus: URIs)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -442,16 +442,16 @@
         <translation>Tampilkan daftar alamat dan label yang diterima</translation>
     </message>
     <message>
-        <source>Open a particl: URI or payment request</source>
-        <translation>Buka URI particl: atau permintaan pembayaran</translation>
+        <source>Open a rhombus: URI or payment request</source>
+        <translation>Buka URI rhombus: atau permintaan pembayaran</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>&amp;pilihan Command-line</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Particl network</source>
-        <translation><numerusform>%n koneksi aktif ke jaringan Particl</numerusform></translation>
+        <source>%n active connection(s) to Rhombus network</source>
+        <translation><numerusform>%n koneksi aktif ke jaringan Rhombus</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -518,8 +518,8 @@
         <translation>Tutup wallet</translation>
     </message>
     <message>
-        <source>Show the %1 help message to get a list with possible Particl command-line options</source>
-        <translation>Tampilkan %1 pesan bantuan untuk mendapatkan daftar opsi baris perintah Particl yang memungkinkan</translation>
+        <source>Show the %1 help message to get a list with possible Rhombus command-line options</source>
+        <translation>Tampilkan %1 pesan bantuan untuk mendapatkan daftar opsi baris perintah Rhombus yang memungkinkan</translation>
     </message>
     <message>
         <source>default wallet</source>
@@ -630,8 +630,8 @@
         <translation>Dompet saat ini &lt;b&gt;terenkripsi&lt;/b&gt; dan &lt;b&gt;terkunci&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>A fatal error occurred. Particl can no longer continue safely and will quit.</source>
-        <translation>Terjadi Kesalahan Fatal. Particl Tidak Dapat Melanjutkan Dengan Aman Dan Akan Keluar</translation>
+        <source>A fatal error occurred. Rhombus can no longer continue safely and will quit.</source>
+        <translation>Terjadi Kesalahan Fatal. Rhombus Tidak Dapat Melanjutkan Dengan Aman Dan Akan Keluar</translation>
     </message>
 </context>
 <context>
@@ -874,8 +874,8 @@
         <translation>Ubah alamat pengirim</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Particl address.</source>
-        <translation>Alamat yang dimasukkan "%1" bukanlah alamat Particl yang valid.</translation>
+        <source>The entered address "%1" is not a valid Rhombus address.</source>
+        <translation>Alamat yang dimasukkan "%1" bukanlah alamat Rhombus yang valid.</translation>
     </message>
     <message>
         <source>Address "%1" already exists as a receiving address with label "%2" and so cannot be added as a sending address.</source>
@@ -975,8 +975,8 @@
         <translation>Gunakan direktori pilihan Anda:</translation>
     </message>
     <message>
-        <source>Particl</source>
-        <translation>Particl</translation>
+        <source>Rhombus</source>
+        <translation>Rhombus</translation>
     </message>
     <message>
         <source>Discard blocks after verification, except most recent %1 GB (prune)</source>
@@ -991,8 +991,8 @@
         <translation>%1 GB data akan disimpan di direktori ini.</translation>
     </message>
     <message>
-        <source>%1 will download and store a copy of the Particl block chain.</source>
-        <translation>%1 akan mengunduh dan menyimpan salinan Particl block chain.</translation>
+        <source>%1 will download and store a copy of the Rhombus block chain.</source>
+        <translation>%1 akan mengunduh dan menyimpan salinan Rhombus block chain.</translation>
     </message>
     <message>
         <source>The wallet will also be stored in this directory.</source>
@@ -1026,12 +1026,12 @@
         <translation>Formulir</translation>
     </message>
     <message>
-        <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the particl network, as detailed below.</source>
-        <translation>Transaksi-transaksi terkini mungkin belum terlihat dan oleh karenanya, saldo dompet Anda mungkin tidak tepat. Informasi ini akan akurat ketika dompet Anda tersinkronisasi dengan jaringan Particl, seperti rincian berikut.</translation>
+        <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the rhombus network, as detailed below.</source>
+        <translation>Transaksi-transaksi terkini mungkin belum terlihat dan oleh karenanya, saldo dompet Anda mungkin tidak tepat. Informasi ini akan akurat ketika dompet Anda tersinkronisasi dengan jaringan Rhombus, seperti rincian berikut.</translation>
     </message>
     <message>
-        <source>Attempting to spend particl that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation>Usaha untuk menggunakan particl yang dipengaruhi oleh transaksi yang belum terlihat tidak akan diterima oleh jaringan.</translation>
+        <source>Attempting to spend rhombus that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
+        <translation>Usaha untuk menggunakan rhombus yang dipengaruhi oleh transaksi yang belum terlihat tidak akan diterima oleh jaringan.</translation>
     </message>
     <message>
         <source>Number of blocks left</source>
@@ -1231,8 +1231,8 @@
         <translation>&amp;Perubahan saldo untuk transaksi yang belum dikonfirmasi</translation>
     </message>
     <message>
-        <source>Automatically open the Particl client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Otomatis membuka port client Particl di router. Hanya berjalan apabila router anda mendukung UPnP dan di-enable.</translation>
+        <source>Automatically open the Rhombus client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Otomatis membuka port client Rhombus di router. Hanya berjalan apabila router anda mendukung UPnP dan di-enable.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -1247,8 +1247,8 @@
         <translation>Terima koneksi-koneksi masuk</translation>
     </message>
     <message>
-        <source>Connect to the Particl network through a SOCKS5 proxy.</source>
-        <translation>Hubungkan ke jaringan Particl melalui SOCKS5 proxy.</translation>
+        <source>Connect to the Rhombus network through a SOCKS5 proxy.</source>
+        <translation>Hubungkan ke jaringan Rhombus melalui SOCKS5 proxy.</translation>
     </message>
     <message>
         <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
@@ -1283,8 +1283,8 @@
         <translation>Tor</translation>
     </message>
     <message>
-        <source>Connect to the Particl network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>Koneksi ke jaringan particl melalui proxy SOCKS5 yang berbeda untuk layanan Tor tersembunyi.</translation>
+        <source>Connect to the Rhombus network through a separate SOCKS5 proxy for Tor hidden services.</source>
+        <translation>Koneksi ke jaringan rhombus melalui proxy SOCKS5 yang berbeda untuk layanan Tor tersembunyi.</translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -1394,8 +1394,8 @@
         <translation>Formulir</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Particl network after a connection is established, but this process has not completed yet.</source>
-        <translation>Informasi terlampir mungkin sudah kedaluwarsa. Dompet Anda secara otomatis mensinkronisasi dengan jaringan Particl ketika sebuah hubungan terbentuk, namun proses ini belum selesai.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Rhombus network after a connection is established, but this process has not completed yet.</source>
+        <translation>Informasi terlampir mungkin sudah kedaluwarsa. Dompet Anda secara otomatis mensinkronisasi dengan jaringan Rhombus ketika sebuah hubungan terbentuk, namun proses ini belum selesai.</translation>
     </message>
     <message>
         <source>Watch-only:</source>
@@ -1469,16 +1469,16 @@
         <translation>Terjadi kesalahan pada permintaan pembayaran</translation>
     </message>
     <message>
-        <source>Cannot start particl: click-to-pay handler</source>
-        <translation>Tidak bisa memulai particl: handler click-to-pay</translation>
+        <source>Cannot start rhombus: click-to-pay handler</source>
+        <translation>Tidak bisa memulai rhombus: handler click-to-pay</translation>
     </message>
     <message>
         <source>URI handling</source>
         <translation>Pengelolaan URI</translation>
     </message>
     <message>
-        <source>'particl://' is not a valid URI. Use 'particl:' instead.</source>
-        <translation>'particl://' bukanlah alamat URI yang valid. Silakan gunakan 'particl:'.</translation>
+        <source>'rhombus://' is not a valid URI. Use 'rhombus:' instead.</source>
+        <translation>'rhombus://' bukanlah alamat URI yang valid. Silakan gunakan 'rhombus:'.</translation>
     </message>
     <message>
         <source>You are using a BIP70 URL which will be unsupported in the future.</source>
@@ -1505,8 +1505,8 @@
         <translation>Alamat pembayaran tidak valid %1</translation>
     </message>
     <message>
-        <source>URI cannot be parsed! This can be caused by an invalid Particl address or malformed URI parameters.</source>
-        <translation>URI tidak bisa dimengerti! Hal ini bisa disebabkan karena alamat Particl yang tidak sah atau parameter URI yang tidak tepat.</translation>
+        <source>URI cannot be parsed! This can be caused by an invalid Rhombus address or malformed URI parameters.</source>
+        <translation>URI tidak bisa dimengerti! Hal ini bisa disebabkan karena alamat Rhombus yang tidak sah atau parameter URI yang tidak tepat.</translation>
     </message>
     <message>
         <source>Payment request file handling</source>
@@ -1607,8 +1607,8 @@
         <translation>Nilai</translation>
     </message>
     <message>
-        <source>Enter a Particl address (e.g. %1)</source>
-        <translation>Masukkan alamat Particl (contoh %1)</translation>
+        <source>Enter a Rhombus address (e.g. %1)</source>
+        <translation>Masukkan alamat Rhombus (contoh %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -2066,8 +2066,8 @@
         <translation>&amp;Pesan:</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Particl network.</source>
-        <translation>Pesan opsional untuk dilampirkan ke permintaan pembayaran, yang akan ditampilkan ketika permintaan dibuka. Catatan: Pesan tidak akan dikirim dengan pembayaran melalui jaringan Particl.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Rhombus network.</source>
+        <translation>Pesan opsional untuk dilampirkan ke permintaan pembayaran, yang akan ditampilkan ketika permintaan dibuka. Catatan: Pesan tidak akan dikirim dengan pembayaran melalui jaringan Rhombus.</translation>
     </message>
     <message>
         <source>An optional label to associate with the new receiving address.</source>
@@ -2655,8 +2655,8 @@ Catatan: Karena biaya dihitung berdasarkan per byte, biaya "100 satoshi per kB" 
         <translation>Salin tanda tangan terpilih ke sistem klipboard</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Particl address</source>
-        <translation>Tandai pesan untuk menyetujui kamu pemiliki alamat Particl ini</translation>
+        <source>Sign the message to prove you own this Rhombus address</source>
+        <translation>Tandai pesan untuk menyetujui kamu pemiliki alamat Rhombus ini</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>

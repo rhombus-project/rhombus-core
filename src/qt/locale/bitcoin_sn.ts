@@ -155,8 +155,8 @@
 <context>
     <name>Intro</name>
     <message>
-        <source>Particl</source>
-        <translation>Particl</translation>
+        <source>Rhombus</source>
+        <translation>Rhombus</translation>
     </message>
     </context>
 <context>
@@ -187,8 +187,8 @@
         <translation>Marii</translation>
     </message>
     <message>
-        <source>Enter a Particl address (e.g. %1)</source>
-        <translation>Nyora kero ye Particl (sekuti %1)</translation>
+        <source>Enter a Rhombus address (e.g. %1)</source>
+        <translation>Nyora kero ye Rhombus (sekuti %1)</translation>
     </message>
     <message>
         <source>%1 d</source>

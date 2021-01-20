@@ -1,9 +1,9 @@
 .PHONY: FORCE
 all: FORCE
-	$(MAKE) -C .. particl_qt test_particl_qt
+	$(MAKE) -C .. rhombus_qt test_rhombus_qt
 clean: FORCE
-	$(MAKE) -C .. particl_qt_clean test_particl_qt_clean
+	$(MAKE) -C .. rhombus_qt_clean test_rhombus_qt_clean
 check: FORCE
-	$(MAKE) -C .. test_particl_qt_check
+	$(MAKE) -C .. test_rhombus_qt_check
 bitcoin-qt bitcoin-qt.exe: FORCE
-	 $(MAKE) -C .. particl_qt
+	 $(MAKE) -C .. rhombus_qt

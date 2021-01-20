@@ -38,8 +38,8 @@
 // Application startup time (used for uptime calculation)
 int64_t GetStartupTime();
 
-extern bool fParticlMode;
-extern bool fParticlWallet;
+extern bool fRhombusMode;
+extern bool fRhombusWallet;
 
 extern const char * const BITCOIN_CONF_FILENAME;
 
@@ -158,8 +158,8 @@ enum class OptionsCategory {
     COMMANDS,
     REGISTER_COMMANDS,
     SMSG,
-    PART_WALLET,
-    PART_STAKING,
+    RHOM_WALLET,
+    RHOM_STAKING,
 
     HIDDEN // Always the last option to avoid printing these in the help
 };

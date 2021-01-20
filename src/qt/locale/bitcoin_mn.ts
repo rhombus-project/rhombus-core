@@ -223,7 +223,7 @@
 <context>
     <name>Intro</name>
     <message>
-        <source>Particl</source>
+        <source>Rhombus</source>
         <translation>Биткойн</translation>
     </message>
     <message>

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 The Particl Core developers
+// Copyright (c) 2017-2019 The Rhombus Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -88,18 +88,18 @@ int CHDWallet::FreeExtKeyMaps()
 
 void CHDWallet::AddOptions()
 {
-    gArgs.AddArg("-defaultlookaheadsize=<n>", strprintf("Number of keys to load into the lookahead pool per chain. (default: %u)", DEFAULT_LOOKAHEAD_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::PART_WALLET);
-    gArgs.AddArg("-stealthv1lookaheadsize=<n>", strprintf("Number of V1 stealth keys to look ahead during a rescan. (default: %u)", DEFAULT_STEALTH_LOOKAHEAD_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::PART_WALLET);
-    gArgs.AddArg("-stealthv2lookaheadsize=<n>", strprintf("Number of V2 stealth keys to look ahead during a rescan. (default: %u)", DEFAULT_STEALTH_LOOKAHEAD_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::PART_WALLET);
-    gArgs.AddArg("-extkeysaveancestors", strprintf("On saving a key from the lookahead pool, save all unsaved keys leading up to it too. (default: %s)", "true"), ArgsManager::ALLOW_ANY, OptionsCategory::PART_WALLET);
-    gArgs.AddArg("-createdefaultmasterkey", strprintf("Generate a random master key and main account if no master key exists. (default: %s)", "false"), ArgsManager::ALLOW_ANY, OptionsCategory::PART_WALLET);
+    gArgs.AddArg("-defaultlookaheadsize=<n>", strprintf("Number of keys to load into the lookahead pool per chain. (default: %u)", DEFAULT_LOOKAHEAD_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_WALLET);
+    gArgs.AddArg("-stealthv1lookaheadsize=<n>", strprintf("Number of V1 stealth keys to look ahead during a rescan. (default: %u)", DEFAULT_STEALTH_LOOKAHEAD_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_WALLET);
+    gArgs.AddArg("-stealthv2lookaheadsize=<n>", strprintf("Number of V2 stealth keys to look ahead during a rescan. (default: %u)", DEFAULT_STEALTH_LOOKAHEAD_SIZE), ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_WALLET);
+    gArgs.AddArg("-extkeysaveancestors", strprintf("On saving a key from the lookahead pool, save all unsaved keys leading up to it too. (default: %s)", "true"), ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_WALLET);
+    gArgs.AddArg("-createdefaultmasterkey", strprintf("Generate a random master key and main account if no master key exists. (default: %s)", "false"), ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_WALLET);
 
-    gArgs.AddArg("-staking", "Stake your coins to support network and gain reward (default: true)", ArgsManager::ALLOW_ANY, OptionsCategory::PART_STAKING);
-    gArgs.AddArg("-stakingthreads", "Number of threads to start for staking, max 1 per active wallet, will divide wallets evenly between threads (default: 1)", ArgsManager::ALLOW_ANY, OptionsCategory::PART_STAKING);
-    gArgs.AddArg("-minstakeinterval=<n>", "Minimum time in seconds between successful stakes (default: 0)", ArgsManager::ALLOW_ANY, OptionsCategory::PART_STAKING);
-    gArgs.AddArg("-minersleep=<n>", "Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)", ArgsManager::ALLOW_ANY, OptionsCategory::PART_STAKING);
-    gArgs.AddArg("-reservebalance=<amount>", "Ensure available balance remains above reservebalance. (default: 0)", ArgsManager::ALLOW_ANY, OptionsCategory::PART_STAKING);
-    gArgs.AddArg("-foundationdonationpercent=<n>", "Percentage of block reward donated to the foundation fund, overridden by system minimum. (default: 0)", ArgsManager::ALLOW_ANY, OptionsCategory::PART_STAKING);
+    gArgs.AddArg("-staking", "Stake your coins to support network and gain reward (default: true)", ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_STAKING);
+    gArgs.AddArg("-stakingthreads", "Number of threads to start for staking, max 1 per active wallet, will divide wallets evenly between threads (default: 1)", ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_STAKING);
+    gArgs.AddArg("-minstakeinterval=<n>", "Minimum time in seconds between successful stakes (default: 0)", ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_STAKING);
+    gArgs.AddArg("-minersleep=<n>", "Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)", ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_STAKING);
+    gArgs.AddArg("-reservebalance=<amount>", "Ensure available balance remains above reservebalance. (default: 0)", ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_STAKING);
+    gArgs.AddArg("-foundationdonationpercent=<n>", "Percentage of block reward donated to the foundation fund, overridden by system minimum. (default: 0)", ArgsManager::ALLOW_ANY, OptionsCategory::RHOM_STAKING);
 
     return;
 };
@@ -121,7 +121,6 @@ bool CHDWallet::Initialise()
 
         LoadAddressBook(&wdb);
         LoadTxRecords(&wdb);
-        LoadVoteTokens(&wdb);
     }
 
     int rescan_height = 0;
@@ -734,59 +733,6 @@ bool CHDWallet::LoadAddressBook(CHDWalletDB *pwdb)
     pcursor->close();
 
     return true;
-};
-
-bool CHDWallet::LoadVoteTokens(CHDWalletDB *pwdb)
-{
-    LogPrint(BCLog::HDWALLET, "%s Loading vote tokens.\n", GetDisplayName());
-
-    LOCK(cs_wallet);
-
-    vVoteTokens.clear();
-
-    std::vector<CVoteToken> vVoteTokensRead;
-
-    if (!pwdb->ReadVoteTokens(vVoteTokensRead)) {
-        return false;
-    }
-
-    int nBestHeight = ::ChainActive().Height();
-
-    for (auto &v : vVoteTokensRead) {
-        if (v.nEnd > nBestHeight - 1000) { // 1000 block buffer in case of reorg etc
-            vVoteTokens.push_back(v);
-            if (LogAcceptCategory(BCLog::HDWALLET)) {
-                if ((v.nToken >> 16) < 1
-                    || (v.nToken & 0xFFFF) < 1) {
-                    WalletLogPrintf("Clearing vote from block %d to %d.\n",
-                        v.nStart, v.nEnd);
-                } else {
-                    WalletLogPrintf("Voting for option %u on proposal %u from block %d to %d.\n",
-                        v.nToken >> 16, v.nToken & 0xFFFF, v.nStart, v.nEnd);
-                }
-            }
-        }
-    }
-
-    return true;
-};
-
-bool CHDWallet::GetVote(int nHeight, uint32_t &token)
-{
-    for (auto i = vVoteTokens.rbegin(); i != vVoteTokens.rend(); ++i) {
-        if (i->nEnd < nHeight
-            || i->nStart > nHeight) {
-            continue;
-        }
-        if ((i->nToken >> 16) < 1
-            || (i->nToken & 0xFFFF) < 1) {
-            continue;
-        }
-        token = i->nToken;
-        return true;
-    }
-
-    return false;
 };
 
 bool CHDWallet::LoadTxRecords(CHDWalletDB *pwdb)
@@ -1413,7 +1359,7 @@ bool CHDWallet::AddressBookChangedNotify(const CTxDestination &address, ChangeTy
 
 DBErrors CHDWallet::LoadWallet(bool& fFirstRunRet)
 {
-    fParticlWallet = true;
+    fRhombusWallet = true;
 
     if (!ParseMoney(gArgs.GetArg("-reservebalance", ""), nReserveBalance)) {
         InitError(_("Invalid amount for -reservebalance=<amount>").translated);
@@ -2052,7 +1998,7 @@ CAmount CHDWallet::GetDebit(const CTxIn &txin, const isminefilter &filter) const
 
 CAmount CHDWallet::GetDebit(const CTransaction& tx, const isminefilter& filter) const
 {
-    if (!tx.IsParticlVersion())
+    if (!tx.IsRhombusVersion())
         return CWallet::GetDebit(tx, filter);
 
     CAmount nDebit = 0;
@@ -3646,7 +3592,7 @@ int CHDWallet::AddStandardInputs(interfaces::Chain::Lock& locked_chain, CWalletT
     wtx.BindWallet(this);
     wtx.fFromMe = true;
     CMutableTransaction txNew;
-    txNew.nVersion = PARTICL_TXN_VERSION;
+    txNew.nVersion = RHOMBUS_TXN_VERSION;
     txNew.vout.clear();
 
     // Discourage fee sniping. See CWallet::CreateTransaction
@@ -3868,7 +3814,7 @@ int CHDWallet::AddStandardInputs(interfaces::Chain::Lock& locked_chain, CWalletT
                 if (it != coinControl->m_inputData.end()) {
                     sigdata.scriptWitness = it->second.scriptWitness;
                 } else
-                if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_PARTICL, scriptPubKey, sigdata)) {
+                if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_RHOMBUS, scriptPubKey, sigdata)) {
                     return wserrorN(1, sError, __func__, "Dummy signature failed.");
                 }
                 UpdateInput(txNew.vin[nIn], sigdata);
@@ -4222,7 +4168,7 @@ int CHDWallet::AddBlindedInputs(interfaces::Chain::Lock& locked_chain, CWalletTx
     wtx.BindWallet(this);
     wtx.fFromMe = true;
     CMutableTransaction txNew;
-    txNew.nVersion = PARTICL_TXN_VERSION;
+    txNew.nVersion = RHOMBUS_TXN_VERSION;
     txNew.vout.clear();
 
     // Discourage fee sniping. See CWallet::CreateTransaction
@@ -4399,7 +4345,7 @@ int CHDWallet::AddBlindedInputs(interfaces::Chain::Lock& locked_chain, CWalletTx
                 if (it != coinControl->m_inputData.end()) {
                     sigdata.scriptWitness = it->second.scriptWitness;
                 } else
-                if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_PARTICL, scriptPubKey, sigdata)) {
+                if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_RHOMBUS, scriptPubKey, sigdata)) {
                     return wserrorN(1, sError, __func__, "Dummy signature failed.");
                 }
                 UpdateInput(txNew.vin[nIn], sigdata);
@@ -4966,7 +4912,7 @@ int CHDWallet::AddAnonInputs(interfaces::Chain::Lock& locked_chain, CWalletTx &w
     wtx.BindWallet(this);
     wtx.fFromMe = true;
     CMutableTransaction txNew;
-    txNew.nVersion = PARTICL_TXN_VERSION;
+    txNew.nVersion = RHOMBUS_TXN_VERSION;
     txNew.vout.clear();
 
     txNew.nLockTime = 0;
@@ -6491,12 +6437,12 @@ int CHDWallet::ExtKeyEncryptAll(CHDWalletDB *pwdb, const CKeyingMaterial &vMKey)
     size_t nKeys = 0;
 
     uint32_t fFlags = DB_SET_RANGE;
-    ssKey << std::string(DBKeys::PART_EXTKEY);
+    ssKey << std::string(DBKeys::RHOM_EXTKEY);
     while (pwdb->ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0) {
         fFlags = DB_NEXT;
 
         ssKey >> strType;
-        if (strType != DBKeys::PART_EXTKEY) {
+        if (strType != DBKeys::RHOM_EXTKEY) {
             break;
         }
 
@@ -6730,12 +6676,12 @@ int CHDWallet::ExtKeyLoadAccounts()
     std::string strType;
 
     unsigned int fFlags = DB_SET_RANGE;
-    ssKey << std::string(DBKeys::PART_EXTACC);
+    ssKey << std::string(DBKeys::RHOM_EXTACC);
     while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0) {
         fFlags = DB_NEXT;
 
         ssKey >> strType;
-        if (strType != DBKeys::PART_EXTACC) {
+        if (strType != DBKeys::RHOM_EXTACC) {
             break;
         }
 
@@ -6932,14 +6878,14 @@ int CHDWallet::ExtKeyLoadAccountPacks()
 
     size_t nStealthKeys = 0;
     ssKey.clear();
-    ssKey << std::string(DBKeys::PART_SXADDRKEYPACK);
+    ssKey << std::string(DBKeys::RHOM_SXADDRKEYPACK);
     fFlags = DB_SET_RANGE;
     while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0) {
         aksPak.clear();
         fFlags = DB_NEXT;
 
         ssKey >> strType;
-        if (strType != DBKeys::PART_SXADDRKEYPACK) {
+        if (strType != DBKeys::RHOM_SXADDRKEYPACK) {
             break;
         }
 
@@ -8312,7 +8258,7 @@ bool CHDWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const s
 {
     WalletLogPrintf("CHDWallet %s\n", __func__);
 
-    if (!fParticlWallet) {
+    if (!fRhombusWallet) {
         return CWallet::CreateTransaction(locked_chain, vecSend, tx, nFeeRet, nChangePosInOut, strFailReason, coin_control, sign);
     }
 
@@ -8448,7 +8394,7 @@ bool CHDWallet::DummySignInput(CTxIn &tx_in, const CTxOut &txout, bool use_max_s
     const CScript &scriptPubKey = txout.scriptPubKey;
     SignatureData sigdata;
 
-    if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_PARTICL, scriptPubKey, sigdata)) {
+    if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_RHOMBUS, scriptPubKey, sigdata)) {
         return false;
     } else {
         UpdateInput(tx_in, sigdata);
@@ -8465,7 +8411,7 @@ bool CHDWallet::DummySignInput(CTxIn &tx_in, const CTxOutBaseRef &txout) const
     const CScript &scriptPubKey = *txout->GetPScriptPubKey();
     SignatureData sigdata;
 
-    if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_PARTICL, scriptPubKey, sigdata)) {
+    if (!ProduceSignature(*this, DUMMY_SIGNATURE_CREATOR_RHOMBUS, scriptPubKey, sigdata)) {
         return false;
     } else {
         UpdateInput(tx_in, sigdata);
@@ -8510,12 +8456,12 @@ int CHDWallet::LoadStealthAddresses()
     std::string strType;
 
     unsigned int fFlags = DB_SET_RANGE;
-    ssKey << std::string(DBKeys::PART_SXADDR);
+    ssKey << std::string(DBKeys::RHOM_SXADDR);
     while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0) {
         fFlags = DB_NEXT;
 
         ssKey >> strType;
-        if (strType != DBKeys::PART_SXADDR) {
+        if (strType != DBKeys::RHOM_SXADDR) {
             break;
         }
 
@@ -12539,7 +12485,7 @@ bool CHDWallet::CreateCoinStake(unsigned int nBits, int64_t nTime, int nBlockHei
             txNew.vpout.clear();
 
             // Mark as coin stake transaction
-            txNew.nVersion = PARTICL_TXN_VERSION;
+            txNew.nVersion = RHOMBUS_TXN_VERSION;
             txNew.SetType(TXN_COINSTAKE);
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
@@ -12550,14 +12496,6 @@ bool CHDWallet::CreateCoinStake(unsigned int nBits, int64_t nTime, int nBlockHei
             OUTPUT_PTR<CTxOutData> out0 = MAKE_OUTPUT<CTxOutData>();
             out0->vData.resize(4);
             memcpy(&out0->vData[0], &nBlockHeight, 4);
-
-            uint32_t voteToken = 0;
-            if (GetVote(nBlockHeight, voteToken)) {
-                size_t origSize = out0->vData.size();
-                out0->vData.resize(origSize + 5);
-                out0->vData[origSize] = DO_VOTE;
-                memcpy(&out0->vData[origSize+1], &voteToken, 4);
-            }
 
             txNew.vpout.push_back(out0);
 
@@ -12642,57 +12580,7 @@ bool CHDWallet::CreateCoinStake(unsigned int nBits, int64_t nTime, int nBlockHei
     // Process development fund
     CTransactionRef txPrevCoinstake = nullptr;
     CAmount nRewardOut;
-    const DevFundSettings *pDevFundSettings = Params().GetDevFundSettings(nTime);
-    if (!pDevFundSettings || pDevFundSettings->nMinDevStakePercent <= 0) {
-        nRewardOut = nReward;
-    } else {
-        int64_t nStakeSplit = std::max(pDevFundSettings->nMinDevStakePercent, nWalletDevFundCedePercent);
-
-        CAmount nDevPart = (nReward * nStakeSplit) / 100;
-        nRewardOut = nReward - nDevPart;
-
-        CAmount nDevBfwd = 0;
-        if (nBlockHeight > 1) { // genesis block is pow
-            LOCK(cs_main);
-            if (!coinStakeCache.GetCoinStake(pindexPrev->GetBlockHash(), txPrevCoinstake)) {
-                return werror("%s: Failed to get previous coinstake: %s.", __func__, pindexPrev->GetBlockHash().ToString());
-            }
-
-            if (!txPrevCoinstake->GetDevFundCfwd(nDevBfwd)) {
-                nDevBfwd = 0;
-            }
-        }
-
-        CAmount nDevCfwd = nDevBfwd + nDevPart;
-        if (nBlockHeight % pDevFundSettings->nDevOutputPeriod == 0) {
-            // Place dev fund output
-            OUTPUT_PTR<CTxOutStandard> outDevSplit = MAKE_OUTPUT<CTxOutStandard>();
-            outDevSplit->nValue = nDevCfwd;
-
-            CTxDestination dfDest = CBitcoinAddress(pDevFundSettings->sDevFundAddresses).Get();
-            if (dfDest.type() == typeid(CNoDestination)) {
-                return werror("%s: Failed to get foundation fund destination: %s.", __func__, pDevFundSettings->sDevFundAddresses);
-            }
-            outDevSplit->scriptPubKey = GetScriptForDestination(dfDest);
-
-            txNew.vpout.insert(txNew.vpout.begin()+1, outDevSplit);
-        } else {
-            // Add to carried forward
-            std::vector<uint8_t> vCfwd(1), &vData = *txNew.vpout[0]->GetPData();
-            vCfwd[0] = DO_DEV_FUND_CFWD;
-            if (0 != PutVarInt(vCfwd, nDevCfwd)) {
-                return werror("%s: PutVarInt failed: %d.", __func__, nDevCfwd);
-            }
-            vData.insert(vData.end(), vCfwd.begin(), vCfwd.end());
-            CAmount test_cfwd = 0;
-            assert(ExtractCoinStakeInt64(vData, DO_DEV_FUND_CFWD, test_cfwd));
-            assert(test_cfwd == nDevCfwd);
-        }
-        if (LogAcceptCategory(BCLog::POS)) {
-            WalletLogPrintf("%s: Coinstake reward split %d%%, foundation %s, reward %s.\n",
-                __func__, nStakeSplit, FormatMoney(nDevPart), FormatMoney(nRewardOut));
-        }
-    }
+     nRewardOut = nReward;
 
     // Place SMSG fee rate
     if (nTime >= consensusParams.smsg_fee_time) {
@@ -12861,7 +12749,7 @@ bool CHDWallet::SignBlock(CBlockTemplate *pblocktemplate, int nHeight, int64_t n
     CBlockIndex *pindexPrev = ::ChainActive().Tip();
 
     CKey key;
-    pblock->nVersion = PARTICL_BLOCK_VERSION;
+    pblock->nVersion = RHOMBUS_BLOCK_VERSION;
     pblock->nBits = GetNextTargetRequired(pindexPrev);
     if (LogAcceptCategory(BCLog::POS)) {
         WalletLogPrintf("%s, nBits %d\n", __func__, pblock->nBits);
@@ -12918,13 +12806,13 @@ int LoopExtKeysInDB(CHDWallet *pwallet, bool fInactive, bool fInAccount, LoopExt
     std::string strType;
 
     uint32_t fFlags = DB_SET_RANGE;
-    ssKey << std::string(DBKeys::PART_EXTKEY);
+    ssKey << std::string(DBKeys::RHOM_EXTKEY);
 
     while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0) {
         fFlags = DB_NEXT;
 
         ssKey >> strType;
-        if (strType != DBKeys::PART_EXTKEY) {
+        if (strType != DBKeys::RHOM_EXTKEY) {
             break;
         }
 
@@ -12960,13 +12848,13 @@ int LoopExtAccountsInDB(CHDWallet *pwallet, bool fInactive, LoopExtKeyCallback &
     std::string strType, sError;
 
     uint32_t fFlags = DB_SET_RANGE;
-    ssKey << std::string(DBKeys::PART_EXTACC);
+    ssKey << std::string(DBKeys::RHOM_EXTACC);
 
     while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0) {
         fFlags = DB_NEXT;
 
         ssKey >> strType;
-        if (strType != DBKeys::PART_EXTACC) {
+        if (strType != DBKeys::RHOM_EXTACC) {
             break;
         }
 
@@ -13049,12 +12937,12 @@ void RestartStakingThreads()
     StartThreadStakeMiner();
 };
 
-bool IsParticlWallet(const FillableSigningProvider *win)
+bool IsRhombusWallet(const FillableSigningProvider *win)
 {
     return win && dynamic_cast<const CHDWallet*>(win);
 };
 
-CHDWallet *GetParticlWallet(FillableSigningProvider *win)
+CHDWallet *GetRhombusWallet(FillableSigningProvider *win)
 {
     CHDWallet *rv;
     if (!win) {
@@ -13066,7 +12954,7 @@ CHDWallet *GetParticlWallet(FillableSigningProvider *win)
     return rv;
 };
 
-const CHDWallet *GetParticlWallet(const FillableSigningProvider *win)
+const CHDWallet *GetRhombusWallet(const FillableSigningProvider *win)
 {
     const CHDWallet *rv;
     if (!win) {

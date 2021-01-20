@@ -1,10 +1,10 @@
 // Copyright (c) 2014-2015 The ShadowCoin developers
-// Copyright (c) 2017-2020 The Particl Core developers
+// Copyright (c) 2017-2020 The Rhombus Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PARTICL_KEY_MNEMONIC_H
-#define PARTICL_KEY_MNEMONIC_H
+#ifndef RHOMBUS_KEY_MNEMONIC_H
+#define RHOMBUS_KEY_MNEMONIC_H
 
 #include <string>
 #include <vector>
@@ -43,5 +43,5 @@ std::string ListEnabledLanguages(std::string separator);
 
 }
 
-#endif // PARTICL_KEY_MNEMONIC_H
+#endif // RHOMBUS_KEY_MNEMONIC_H
 

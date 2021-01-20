@@ -53,7 +53,7 @@ WalletTx MakeWalletTx(interfaces::Chain::Lock& locked_chain, CWallet& wallet, co
     for (const auto& txin : wtx.tx->vin) {
         result.txin_is_mine.emplace_back(wallet.IsMine(txin));
     }
-    if (wtx.tx->IsParticlVersion()) {
+    if (wtx.tx->IsRhombusVersion()) {
         size_t nv = wtx.tx->GetNumVOuts();
         result.txout_is_mine.reserve(nv);
         result.txout_address.reserve(nv);
@@ -183,8 +183,8 @@ class WalletImpl : public Wallet
 public:
     explicit WalletImpl(const std::shared_ptr<CWallet>& wallet) : m_wallet(wallet)
     {
-        if (::IsParticlWallet(wallet.get())) {
-            m_wallet_part = GetParticlWallet(wallet.get());
+        if (::IsRhombusWallet(wallet.get())) {
+            m_wallet_rhom = GetRhombusWallet(wallet.get());
         }
     }
 
@@ -199,8 +199,8 @@ public:
         if (!m_wallet->Unlock(wallet_passphrase)) {
             return false;
         }
-        if (m_wallet_part) {
-            m_wallet_part->fUnlockForStakingOnly = for_staking_only;
+        if (m_wallet_rhom) {
+            m_wallet_rhom->fUnlockForStakingOnly = for_staking_only;
         }
         return true;
     }
@@ -356,7 +356,7 @@ public:
         CAmount& new_fee,
         CMutableTransaction& mtx) override
     {
-        if (total_fee > 0 || ::IsParticlWallet(m_wallet.get())) {
+        if (total_fee > 0 || ::IsRhombusWallet(m_wallet.get())) {
             return feebumper::CreateTotalBumpTransaction(m_wallet.get(), txid, coin_control, total_fee, errors, old_fee, new_fee, mtx) ==
                 feebumper::Result::OK;
         } else {
@@ -392,10 +392,10 @@ public:
             return MakeWalletTx(*locked_chain, *m_wallet, mi->second);
         }
 
-        if (m_wallet_part) {
-            const auto mi = m_wallet_part->mapRecords.find(txid);
-            if (mi != m_wallet_part->mapRecords.end()) {
-                return MakeWalletTx(*m_wallet_part, mi);
+        if (m_wallet_rhom) {
+            const auto mi = m_wallet_rhom->mapRecords.find(txid);
+            if (mi != m_wallet_rhom->mapRecords.end()) {
+                return MakeWalletTx(*m_wallet_rhom, mi);
             }
         }
 
@@ -410,9 +410,9 @@ public:
         for (const auto& entry : m_wallet->mapWallet) {
             result.emplace_back(MakeWalletTx(*locked_chain, *m_wallet, entry.second));
         }
-        if (m_wallet_part) {
-            for (auto mi = m_wallet_part->mapRecords.begin(); mi != m_wallet_part->mapRecords.end(); mi++) {
-                result.emplace_back(MakeWalletTx(*m_wallet_part, mi));
+        if (m_wallet_rhom) {
+            for (auto mi = m_wallet_rhom->mapRecords.begin(); mi != m_wallet_rhom->mapRecords.end(); mi++) {
+                result.emplace_back(MakeWalletTx(*m_wallet_rhom, mi));
             }
         }
 
@@ -434,11 +434,11 @@ public:
         auto mi = m_wallet->mapWallet.find(txid);
         if (mi == m_wallet->mapWallet.end()) {
 
-            if (m_wallet_part) {
-                auto mi = m_wallet_part->mapRecords.find(txid);
-                if (mi != m_wallet_part->mapRecords.end()) {
+            if (m_wallet_rhom) {
+                auto mi = m_wallet_rhom->mapRecords.find(txid);
+                if (mi != m_wallet_rhom->mapRecords.end()) {
                     num_blocks = locked_chain->getHeight().get_value_or(-1);
-                    tx_status = MakeWalletTxStatus(*locked_chain, *m_wallet_part, mi->first, mi->second);
+                    tx_status = MakeWalletTxStatus(*locked_chain, *m_wallet_rhom, mi->first, mi->second);
                     return true;
                 }
             }
@@ -470,14 +470,14 @@ public:
             tx_status = MakeWalletTxStatus(*locked_chain, mi->second);
             return MakeWalletTx(*locked_chain, *m_wallet, mi->second);
         }
-        if (m_wallet_part) {
-            auto mi = m_wallet_part->mapRecords.find(txid);
-            if (mi != m_wallet_part->mapRecords.end()) {
+        if (m_wallet_rhom) {
+            auto mi = m_wallet_rhom->mapRecords.find(txid);
+            if (mi != m_wallet_rhom->mapRecords.end()) {
                 num_blocks = locked_chain->getHeight().get_value_or(-1);
-                in_mempool = m_wallet_part->InMempool(mi->first);
+                in_mempool = m_wallet_rhom->InMempool(mi->first);
                 order_form = {};
-                tx_status = MakeWalletTxStatus(*locked_chain, *m_wallet_part, mi->first, mi->second);
-                return MakeWalletTx(*m_wallet_part, mi);
+                tx_status = MakeWalletTxStatus(*locked_chain, *m_wallet_rhom, mi->first, mi->second);
+                return MakeWalletTx(*m_wallet_rhom, mi);
             }
         }
         return {};
@@ -486,9 +486,9 @@ public:
     {
         WalletBalances result;
 
-        if (m_wallet_part) {
+        if (m_wallet_rhom) {
             CHDWalletBalances bal;
-            if (!m_wallet_part->GetBalances(bal)) {
+            if (!m_wallet_rhom->GetBalances(bal)) {
                 return result;
             }
 
@@ -576,13 +576,13 @@ public:
         LOCK(m_wallet->cs_wallet);
 
         CoinsList result;
-        if (m_wallet_part
+        if (m_wallet_rhom
             && nType != OUTPUT_STANDARD) {
-            for (const auto& entry : m_wallet_part->ListCoins(*locked_chain, nType)) {
+            for (const auto& entry : m_wallet_rhom->ListCoins(*locked_chain, nType)) {
                 auto& group = result[entry.first];
                 for (const auto& coin : entry.second) {
                     group.emplace_back(
-                        COutPoint(coin.rtx->first, coin.i), MakeWalletTxOut(*locked_chain, *m_wallet_part, coin.txhash, coin.rtx->second, coin.i, coin.nDepth));
+                        COutPoint(coin.rtx->first, coin.i), MakeWalletTxOut(*locked_chain, *m_wallet_rhom, coin.txhash, coin.rtx->second, coin.i, coin.nDepth));
                 }
             }
             return result;
@@ -612,13 +612,13 @@ public:
                     result.back() = MakeWalletTxOut(*locked_chain, *m_wallet, it->second, output.n, depth);
                 }
             } else
-            if (m_wallet_part) {
-                const auto mi = m_wallet_part->mapRecords.find(output.hash);
-                if (mi != m_wallet_part->mapRecords.end()) {
+            if (m_wallet_rhom) {
+                const auto mi = m_wallet_rhom->mapRecords.find(output.hash);
+                if (mi != m_wallet_rhom->mapRecords.end()) {
                     const auto &rtx = mi->second;
-                    int depth = m_wallet_part->GetDepthInMainChain(*locked_chain, rtx.blockHash, rtx.nIndex);
+                    int depth = m_wallet_rhom->GetDepthInMainChain(*locked_chain, rtx.blockHash, rtx.nIndex);
                     if (depth >= 0) {
-                        result.back() = MakeWalletTxOut(*locked_chain, *m_wallet_part, output.hash, rtx, output.n, depth);
+                        result.back() = MakeWalletTxOut(*locked_chain, *m_wallet_rhom, output.hash, rtx, output.n, depth);
                     }
                 }
             }
@@ -648,9 +648,9 @@ public:
     void remove() override
     {
         RemoveWallet(m_wallet);
-        if (m_wallet_part) {
-            smsgModule.WalletUnloaded(m_wallet_part);
-            m_wallet_part = nullptr;
+        if (m_wallet_rhom) {
+            smsgModule.WalletUnloaded(m_wallet_rhom);
+            m_wallet_rhom = nullptr;
             RestartStakingThreads();
         }
     }
@@ -690,102 +690,102 @@ public:
 
     std::unique_ptr<Handler> handleReservedBalanceChanged(ReservedBalanceChangedFn fn) override
     {
-        return MakeHandler(m_wallet_part->NotifyReservedBalanceChanged.connect(fn));
+        return MakeHandler(m_wallet_rhom->NotifyReservedBalanceChanged.connect(fn));
     }
 
-    bool IsParticlWallet() override
+    bool IsRhombusWallet() override
     {
-        return m_wallet_part;
+        return m_wallet_rhom;
     }
 
     CAmount getReserveBalance() override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return 0;
-        return m_wallet_part->nReserveBalance;
+        return m_wallet_rhom->nReserveBalance;
     }
 
     bool ownDestination(const CTxDestination &dest) override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return false;
-        return m_wallet_part->HaveAddress(dest);
+        return m_wallet_rhom->HaveAddress(dest);
     }
 
     bool isUnlockForStakingOnlySet() override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return false;
-        return m_wallet_part->fUnlockForStakingOnly;
+        return m_wallet_rhom->fUnlockForStakingOnly;
     }
 
     CAmount getAvailableAnonBalance(const CCoinControl& coin_control) override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return 0;
-        return m_wallet_part->GetAvailableAnonBalance(&coin_control);
+        return m_wallet_rhom->GetAvailableAnonBalance(&coin_control);
     }
 
     CAmount getAvailableBlindBalance(const CCoinControl& coin_control) override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return 0;
-        return m_wallet_part->GetAvailableBlindBalance(&coin_control);
+        return m_wallet_rhom->GetAvailableBlindBalance(&coin_control);
     }
 
-    CHDWallet *getParticlWallet() override
+    CHDWallet *getRhombusWallet() override
     {
-        return m_wallet_part;
+        return m_wallet_rhom;
     }
 
     bool setReserveBalance(CAmount nValue) override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return false;
-        return m_wallet_part->SetReserveBalance(nValue);
+        return m_wallet_rhom->SetReserveBalance(nValue);
     }
 
     void lockWallet() override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return;
-        ::LockWallet(m_wallet_part);
+        ::LockWallet(m_wallet_rhom);
     }
 
     bool setUnlockedForStaking() override
     {
-        if (!m_wallet_part || m_wallet_part->IsLocked()) {
+        if (!m_wallet_rhom || m_wallet_rhom->IsLocked()) {
             return false;
         }
-        m_wallet_part->fUnlockForStakingOnly = true;
+        m_wallet_rhom->fUnlockForStakingOnly = true;
         return true;
     }
 
     bool isDefaultAccountSet() override
     {
-        return (m_wallet_part && !m_wallet_part->idDefaultAccount.IsNull());
+        return (m_wallet_rhom && !m_wallet_rhom->idDefaultAccount.IsNull());
     }
 
     bool isHardwareLinkedWallet() override
     {
-        return (m_wallet_part && m_wallet_part->IsHardwareLinkedWallet());
+        return (m_wallet_rhom && m_wallet_rhom->IsHardwareLinkedWallet());
     }
 
     CAmount getCredit(const CTxOutBase *txout, isminefilter filter) override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return 0;
-        return m_wallet_part->GetCredit(txout, filter);
+        return m_wallet_rhom->GetCredit(txout, filter);
     }
 
     isminetype txoutIsMine(const CTxOutBase *txout) override
     {
-        if (!m_wallet_part)
+        if (!m_wallet_rhom)
             return ISMINE_NO;
-        return m_wallet_part->IsMine(txout);
+        return m_wallet_rhom->IsMine(txout);
     }
 
-    CHDWallet *m_wallet_part = nullptr;
+    CHDWallet *m_wallet_rhom = nullptr;
 };
 
 class WalletClientImpl : public ChainClient

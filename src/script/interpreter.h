@@ -166,7 +166,7 @@ public:
         return false;
     }
 
-    virtual bool IsParticlVersion() const
+    virtual bool IsRhombusVersion() const
     {
         return false;
     }
@@ -198,9 +198,9 @@ public:
         return txTo && txTo->IsCoinStake();
     }
 
-    bool IsParticlVersion() const override
+    bool IsRhombusVersion() const override
     {
-        return txTo && txTo->IsParticlVersion();
+        return txTo && txTo->IsRhombusVersion();
     }
 };
 

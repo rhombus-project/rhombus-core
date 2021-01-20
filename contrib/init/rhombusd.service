@@ -1,0 +1,25 @@
+[Unit]
+Description=Rhombus daemon
+After=network.target
+
+[Service]
+User=rhombus
+Group=rhombus
+
+Type=forking
+PIDFile=/home/rhombus/.rhombus/rhombusd.pid
+ExecStart=/home/rhombus/Rhombus/rhombusd -daemon -pid=/home/rhombus/.rhombus/rhombusd.pid \
+-conf=/home/rhombus/.rhombus/rhombus.conf -datadir=/home/rhombus/.rhombus
+
+ExecStop=/home/rhombus/Rhombus/rhombus-cli -conf=/home/rhombus/.rhombus/rhombus.conf stop
+ExecStop=/usr/bin/sleep 25
+
+Restart=no
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

@@ -185,22 +185,22 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "tallyvotes", 2, "height_end" },
 
 
-    { "sendparttoblind", 1, "amount" },
-    { "sendparttoblind", 4, "subtractfeefromamount" },
-    { "sendparttoanon", 1, "amount" },
-    { "sendparttoanon", 4, "subtractfeefromamount" },
+    { "sendrhomtoblind", 1, "amount" },
+    { "sendrhomtoblind", 4, "subtractfeefromamount" },
+    { "sendrhomtoanon", 1, "amount" },
+    { "sendrhomtoanon", 4, "subtractfeefromamount" },
 
-    { "sendblindtopart", 1, "amount" },
-    { "sendblindtopart", 4, "subtractfeefromamount" },
+    { "sendblindtorhom", 1, "amount" },
+    { "sendblindtorhom", 4, "subtractfeefromamount" },
     { "sendblindtoblind", 1, "amount" },
     { "sendblindtoblind", 4, "subtractfeefromamount" },
     { "sendblindtoanon", 1, "amount" },
     { "sendblindtoanon", 4, "subtractfeefromamount" },
 
-    { "sendanontopart", 1, "amount" },
-    { "sendanontopart", 4, "subtractfeefromamount" },
-    { "sendanontopart", 6, "ringsize" },
-    { "sendanontopart", 7, "inputs_per_sig" },
+    { "sendanontorhom", 1, "amount" },
+    { "sendanontorhom", 4, "subtractfeefromamount" },
+    { "sendanontorhom", 6, "ringsize" },
+    { "sendanontorhom", 7, "inputs_per_sig" },
 
     { "sendanontoblind", 1, "amount" },
     { "sendanontoblind", 4, "subtractfeefromamount" },
@@ -248,10 +248,10 @@ static const CRPCConvertParam vRPCConvertParams[] =
 
     { "rewindchain", 0, "height" },
 
-    { "createrawparttransaction", 0, "inputs" },
-    { "createrawparttransaction", 1, "outputs" },
-    { "createrawparttransaction", 2, "locktime" },
-    { "createrawparttransaction", 3, "replaceable" },
+    { "createrawrhomtransaction", 0, "inputs" },
+    { "createrawrhomtransaction", 1, "outputs" },
+    { "createrawrhomtransaction", 2, "locktime" },
+    { "createrawrhomtransaction", 3, "replaceable" },
     { "fundrawtransactionfrom", 2, "input_amounts" },
     { "fundrawtransactionfrom", 3, "output_amounts" },
     { "fundrawtransactionfrom", 4, "options" },

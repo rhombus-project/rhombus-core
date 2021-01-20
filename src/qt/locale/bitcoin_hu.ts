@@ -66,8 +66,8 @@
         <translation>Fogadási cím</translation>
     </message>
     <message>
-        <source>These are your Particl addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Ezek a Particl címeid kifizetések küldéséhez. Mindíg ellenőrizd az összeget és a fogadó címet mielőtt coinokat küldenél.</translation>
+        <source>These are your Rhombus addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Ezek a Rhombus címeid kifizetések küldéséhez. Mindíg ellenőrizd az összeget és a fogadó címet mielőtt coinokat küldenél.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -164,8 +164,8 @@
         <translation>Tárca titkosításának megerősítése</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PARTICL&lt;/b&gt;!</source>
-        <translation>Figyelem: Ha titkosítja a tárcáját és elveszíti a jelszavát, akkor &lt;b&gt;AZ ÖSSZES PARTICLJA ELVESZIK&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR RHOMBUS&lt;/b&gt;!</source>
+        <translation>Figyelem: Ha titkosítja a tárcáját és elveszíti a jelszavát, akkor &lt;b&gt;AZ ÖSSZES RHOMBUSJA ELVESZIK&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -184,7 +184,7 @@
         <translation>Írja be a tárca régi és új jelszavát.</translation>
     </message>
     <message>
-        <source>Remember that encrypting your wallet cannot fully protect your particl from being stolen by malware infecting your computer.</source>
+        <source>Remember that encrypting your wallet cannot fully protect your rhombus from being stolen by malware infecting your computer.</source>
         <translation>Ne feledd, hogy a tárca titkosítása nem nyújt teljes védelmet az adathalász programok fertőzésével szemben.</translation>
     </message>
     <message>
@@ -358,8 +358,8 @@
         <translation>Proxy  &lt;b&gt;aktív&lt;/b&gt;: %1</translation>
     </message>
     <message>
-        <source>Send coins to a Particl address</source>
-        <translation>Particl küldése megadott címre</translation>
+        <source>Send coins to a Rhombus address</source>
+        <translation>Rhombus küldése megadott címre</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -402,12 +402,12 @@
         <translation>A tárcádhoz tartozó privát kulcsok titkosítása</translation>
     </message>
     <message>
-        <source>Sign messages with your Particl addresses to prove you own them</source>
-        <translation>Üzenetek aláírása a Particl-címmeiddel, amivel bizonyítod, hogy a cím a sajátod</translation>
+        <source>Sign messages with your Rhombus addresses to prove you own them</source>
+        <translation>Üzenetek aláírása a Rhombus-címmeiddel, amivel bizonyítod, hogy a cím a sajátod</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Particl addresses</source>
-        <translation>Üzenetek ellenőrzése, hogy valóban a megjelölt Particl-címekkel vannak-e aláírva</translation>
+        <source>Verify messages to ensure they were signed with specified Rhombus addresses</source>
+        <translation>Üzenetek ellenőrzése, hogy valóban a megjelölt Rhombus-címekkel vannak-e aláírva</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -426,8 +426,8 @@
         <translation>Fül eszköztár</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and particl: URIs)</source>
-        <translation>Fizetési kérelem (QR-kódot és "particl:" URI azonosítót hoz létre)</translation>
+        <source>Request payments (generates QR codes and rhombus: URIs)</source>
+        <translation>Fizetési kérelem (QR-kódot és "rhombus:" URI azonosítót hoz létre)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -438,16 +438,16 @@
         <translation>A használt fogadó címek és címkék megtekintése</translation>
     </message>
     <message>
-        <source>Open a particl: URI or payment request</source>
-        <translation>"particl:" URI azonosító vagy fizetési kérelem megnyitása</translation>
+        <source>Open a rhombus: URI or payment request</source>
+        <translation>"rhombus:" URI azonosító vagy fizetési kérelem megnyitása</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>Paran&amp;cssor kapcsolók</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Particl network</source>
-        <translation><numerusform>%n aktív kapcsolat a Particl hálózathoz</numerusform><numerusform>%n aktív kapcsolat a Particl hálózathoz</numerusform></translation>
+        <source>%n active connection(s) to Rhombus network</source>
+        <translation><numerusform>%n aktív kapcsolat a Rhombus hálózathoz</numerusform><numerusform>%n aktív kapcsolat a Rhombus hálózathoz</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -514,8 +514,8 @@
         <translation>Tárca bezárása</translation>
     </message>
     <message>
-        <source>Show the %1 help message to get a list with possible Particl command-line options</source>
-        <translation>A %1 súgó megjelenítése a Particl lehetséges parancssori kapcsolóinak listájával</translation>
+        <source>Show the %1 help message to get a list with possible Rhombus command-line options</source>
+        <translation>A %1 súgó megjelenítése a Rhombus lehetséges parancssori kapcsolóinak listájával</translation>
     </message>
     <message>
         <source>default wallet</source>
@@ -621,8 +621,8 @@
         <translation>A tárca &lt;b&gt;titkosítva&lt;/b&gt; és jelenleg &lt;b&gt;bezárva&lt;/b&gt;.</translation>
     </message>
     <message>
-        <source>A fatal error occurred. Particl can no longer continue safely and will quit.</source>
-        <translation>Végzetes hiba történt. A Particl működése nem biztonságos és hamarosan leáll.</translation>
+        <source>A fatal error occurred. Rhombus can no longer continue safely and will quit.</source>
+        <translation>Végzetes hiba történt. A Rhombus működése nem biztonságos és hamarosan leáll.</translation>
     </message>
 </context>
 <context>
@@ -857,8 +857,8 @@
         <translation>Küldő cím szerkesztése</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Particl address.</source>
-        <translation>A megadott "%1" cím nem egy érvényes Particl-cím.</translation>
+        <source>The entered address "%1" is not a valid Rhombus address.</source>
+        <translation>A megadott "%1" cím nem egy érvényes Rhombus-cím.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -950,8 +950,8 @@
         <translation>Saját adatkönyvtár használata:</translation>
     </message>
     <message>
-        <source>Particl</source>
-        <translation>Particl</translation>
+        <source>Rhombus</source>
+        <translation>Rhombus</translation>
     </message>
     <message>
         <source>Discard blocks after verification, except most recent %1 GB (prune)</source>
@@ -966,8 +966,8 @@
         <translation>Hozzávetőlegesen %1 GB adatot fogunk ebben a könyvtárban tárolni.</translation>
     </message>
     <message>
-        <source>%1 will download and store a copy of the Particl block chain.</source>
-        <translation>%1 le fog töltődni és a Particl blokk lánc egy másolatát fogja tárolni.</translation>
+        <source>%1 will download and store a copy of the Rhombus block chain.</source>
+        <translation>%1 le fog töltődni és a Rhombus blokk lánc egy másolatát fogja tárolni.</translation>
     </message>
     <message>
         <source>The wallet will also be stored in this directory.</source>
@@ -993,12 +993,12 @@
         <translation>Űrlap</translation>
     </message>
     <message>
-        <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the particl network, as detailed below.</source>
-        <translation>A legutóbbi tranzakciók még lehet, hogy nem láthatók, és így előfordulhat, hogy a tárca egyenlege helytelen. A tárca azon nyomban az aktuális egyenleget fogja mutatni, amint befejezte a particl hálózattal történő szinkronizációt, amely alább van részletezve.</translation>
+        <source>Recent transactions may not yet be visible, and therefore your wallet's balance might be incorrect. This information will be correct once your wallet has finished synchronizing with the rhombus network, as detailed below.</source>
+        <translation>A legutóbbi tranzakciók még lehet, hogy nem láthatók, és így előfordulhat, hogy a tárca egyenlege helytelen. A tárca azon nyomban az aktuális egyenleget fogja mutatni, amint befejezte a rhombus hálózattal történő szinkronizációt, amely alább van részletezve.</translation>
     </message>
     <message>
-        <source>Attempting to spend particl that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
-        <translation>A hálózat nem fogadja el azoknak a particloknak az elköltését, amelyek érintettek a még nem látszódó tranzakciókban.</translation>
+        <source>Attempting to spend rhombus that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
+        <translation>A hálózat nem fogadja el azoknak a rhombusoknak az elköltését, amelyek érintettek a még nem látszódó tranzakciókban.</translation>
     </message>
     <message>
         <source>Number of blocks left</source>
@@ -1190,8 +1190,8 @@
         <translation>&amp;Költése a a jóváhagyatlan visszajárónak</translation>
     </message>
     <message>
-        <source>Automatically open the Particl client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>A Particl-kliens portjának automatikus megnyitása a routeren. Ez csak akkor működik, ha a routered támogatja az UPnP-t és az engedélyezve is van rajta.</translation>
+        <source>Automatically open the Rhombus client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>A Rhombus-kliens portjának automatikus megnyitása a routeren. Ez csak akkor működik, ha a routered támogatja az UPnP-t és az engedélyezve is van rajta.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -1206,8 +1206,8 @@
         <translation>Bejövő kapcsolatok engedélyezése.</translation>
     </message>
     <message>
-        <source>Connect to the Particl network through a SOCKS5 proxy.</source>
-        <translation>Csatlakozás a Particl hálózatához SOCKS5 proxyn keresztül</translation>
+        <source>Connect to the Rhombus network through a SOCKS5 proxy.</source>
+        <translation>Csatlakozás a Rhombus hálózatához SOCKS5 proxyn keresztül</translation>
     </message>
     <message>
         <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
@@ -1242,8 +1242,8 @@
         <translation>Tor</translation>
     </message>
     <message>
-        <source>Connect to the Particl network through a separate SOCKS5 proxy for Tor hidden services.</source>
-        <translation>Csatlakozás a Particl hálózathoz külön SOCKS5 proxy használatával a Tor rejtett szolgáltatásainak eléréséhez.</translation>
+        <source>Connect to the Rhombus network through a separate SOCKS5 proxy for Tor hidden services.</source>
+        <translation>Csatlakozás a Rhombus hálózathoz külön SOCKS5 proxy használatával a Tor rejtett szolgáltatásainak eléréséhez.</translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -1349,8 +1349,8 @@
         <translation>Űrlap</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Particl network after a connection is established, but this process has not completed yet.</source>
-        <translation>A kijelzett információ lehet, hogy elavult. A kapcsolat létrehozatalát követően tárcája automatikusan szinkronba kerül a Particl hálózattal, de ez a folyamat még nem fejeződött be.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Rhombus network after a connection is established, but this process has not completed yet.</source>
+        <translation>A kijelzett információ lehet, hogy elavult. A kapcsolat létrehozatalát követően tárcája automatikusan szinkronba kerül a Rhombus hálózattal, de ez a folyamat még nem fejeződött be.</translation>
     </message>
     <message>
         <source>Watch-only:</source>
@@ -1424,8 +1424,8 @@
         <translation>Hiba történt a fizetési kérelem során</translation>
     </message>
     <message>
-        <source>Cannot start particl: click-to-pay handler</source>
-        <translation>A particl nem tud elindulni: click-to-pay kezelő</translation>
+        <source>Cannot start rhombus: click-to-pay handler</source>
+        <translation>A rhombus nem tud elindulni: click-to-pay kezelő</translation>
     </message>
     <message>
         <source>URI handling</source>
@@ -1440,8 +1440,8 @@
         <translation>Érvénytelen fizetési cím %1</translation>
     </message>
     <message>
-        <source>URI cannot be parsed! This can be caused by an invalid Particl address or malformed URI parameters.</source>
-        <translation>Nem sikerült az URI elemzése! Ezt okozhatja érvénytelen Particl cím, vagy rossz URI paraméterezés.</translation>
+        <source>URI cannot be parsed! This can be caused by an invalid Rhombus address or malformed URI parameters.</source>
+        <translation>Nem sikerült az URI elemzése! Ezt okozhatja érvénytelen Rhombus cím, vagy rossz URI paraméterezés.</translation>
     </message>
     <message>
         <source>Payment request file handling</source>
@@ -1538,8 +1538,8 @@
         <translation>Összeg</translation>
     </message>
     <message>
-        <source>Enter a Particl address (e.g. %1)</source>
-        <translation>Ad meg egy Particl címet (pl: %1)</translation>
+        <source>Enter a Rhombus address (e.g. %1)</source>
+        <translation>Ad meg egy Rhombus címet (pl: %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -1975,8 +1975,8 @@
         <translation>&amp;Üzenet:</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Particl network.</source>
-        <translation>Egy opcionális üzenet csatolása a fizetési kérelemhez, amely megjelenik a kérelem megnyitásakor. Megjegyzés: Az üzenet nem lesz elküldve a fizetséggel a Particl hálózaton keresztül.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Rhombus network.</source>
+        <translation>Egy opcionális üzenet csatolása a fizetési kérelemhez, amely megjelenik a kérelem megnyitásakor. Megjegyzés: Az üzenet nem lesz elküldve a fizetséggel a Rhombus hálózaton keresztül.</translation>
     </message>
     <message>
         <source>An optional label to associate with the new receiving address.</source>
@@ -2344,8 +2344,8 @@
         <translation>A fizetési kérelem lejárt.</translation>
     </message>
     <message>
-        <source>Warning: Invalid Particl address</source>
-        <translation>Figyelmeztetés: Érvénytelen Particl cím</translation>
+        <source>Warning: Invalid Rhombus address</source>
+        <translation>Figyelmeztetés: Érvénytelen Rhombus cím</translation>
     </message>
     <message>
         <source>Warning: Unknown change address</source>
@@ -2387,8 +2387,8 @@
         <translation>Ez normál fizetés.</translation>
     </message>
     <message>
-        <source>The Particl address to send the payment to</source>
-        <translation>Erre a Particl címre küldje az összeget</translation>
+        <source>The Rhombus address to send the payment to</source>
+        <translation>Erre a Rhombus címre küldje az összeget</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -2472,8 +2472,8 @@
         <translation>Üzenet aláírása...</translation>
     </message>
     <message>
-        <source>The Particl address to sign the message with</source>
-        <translation>Particl cím, amivel alá kívánja írni az üzenetet</translation>
+        <source>The Rhombus address to sign the message with</source>
+        <translation>Rhombus cím, amivel alá kívánja írni az üzenetet</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -2504,7 +2504,7 @@
         <translation>A jelenleg kiválasztott aláírás másolása a rendszer-vágólapra</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Particl address</source>
+        <source>Sign the message to prove you own this Rhombus address</source>
         <translation>Üzenet</translation>
     </message>
     <message>
@@ -2520,12 +2520,12 @@
         <translation>Üzenet ellenőrzése</translation>
     </message>
     <message>
-        <source>The Particl address the message was signed with</source>
-        <translation>Particl cím, amivel aláírta az üzenetet</translation>
+        <source>The Rhombus address the message was signed with</source>
+        <translation>Rhombus cím, amivel aláírta az üzenetet</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Particl address</source>
-        <translation>Ellenőrizze az üzenetet, hogy valóban a megjelölt Particl címmel van-e aláírva</translation>
+        <source>Verify the message to ensure it was signed with the specified Rhombus address</source>
+        <translation>Ellenőrizze az üzenetet, hogy valóban a megjelölt Rhombus címmel van-e aláírva</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>

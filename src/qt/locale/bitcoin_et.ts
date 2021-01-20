@@ -66,8 +66,8 @@
         <translation>Vastuvõtvad aadressid</translation>
     </message>
     <message>
-        <source>These are your Particl addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Need on sinu Particl aadressid maksete saatmiseks. Ennem müntide saatmist kontrolli alati summat ja makse saaja aadressi.</translation>
+        <source>These are your Rhombus addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Need on sinu Rhombus aadressid maksete saatmiseks. Ennem müntide saatmist kontrolli alati summat ja makse saaja aadressi.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -160,8 +160,8 @@
         <translation>Kinnita rahakoti krüpteerimine.</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PARTICL&lt;/b&gt;!</source>
-        <translation>Hoiatus:Kui sa krüpteerid oma rahakoti ja kaotad salafraasi, siis sa&lt;b&gt;KAOTAD OMA PARTICLID&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR RHOMBUS&lt;/b&gt;!</source>
+        <translation>Hoiatus:Kui sa krüpteerid oma rahakoti ja kaotad salafraasi, siis sa&lt;b&gt;KAOTAD OMA RHOMBUSID&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -282,8 +282,8 @@
         <translation>Kõvakettal olevate plokkide reindekseerimine...</translation>
     </message>
     <message>
-        <source>Send coins to a Particl address</source>
-        <translation>Saada münte Particli aadressile</translation>
+        <source>Send coins to a Rhombus address</source>
+        <translation>Saada münte Rhombusi aadressile</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -326,12 +326,12 @@
         <translation>Krüpteeri oma rahakoti privaatvõtmed</translation>
     </message>
     <message>
-        <source>Sign messages with your Particl addresses to prove you own them</source>
-        <translation>Omandi tõestamiseks allkirjasta sõnumid oma Particli aadressiga</translation>
+        <source>Sign messages with your Rhombus addresses to prove you own them</source>
+        <translation>Omandi tõestamiseks allkirjasta sõnumid oma Rhombusi aadressiga</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Particl addresses</source>
-        <translation>Kinnita sõnumid kindlustamaks et need allkirjastati määratud Particli aadressiga</translation>
+        <source>Verify messages to ensure they were signed with specified Rhombus addresses</source>
+        <translation>Kinnita sõnumid kindlustamaks et need allkirjastati määratud Rhombusi aadressiga</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -350,20 +350,20 @@
         <translation>Vahelehe tööriistariba</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and particl: URIs)</source>
-        <translation>Loo maksepäring (genereerib QR koodid ja particli: URId)</translation>
+        <source>Request payments (generates QR codes and rhombus: URIs)</source>
+        <translation>Loo maksepäring (genereerib QR koodid ja rhombusi: URId)</translation>
     </message>
     <message>
-        <source>Open a particl: URI or payment request</source>
-        <translation>Ava particli: URI või maksepäring</translation>
+        <source>Open a rhombus: URI or payment request</source>
+        <translation>Ava rhombusi: URI või maksepäring</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>&amp;Käsurea valikud</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Particl network</source>
-        <translation><numerusform>%n aktiivne ühendus Particli võrku</numerusform><numerusform>%n aktiivset ühendust Particli võrku</numerusform></translation>
+        <source>%n active connection(s) to Rhombus network</source>
+        <translation><numerusform>%n aktiivne ühendus Rhombusi võrku</numerusform><numerusform>%n aktiivset ühendust Rhombusi võrku</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -616,8 +616,8 @@
         <translation>Muuda saatvat aadressi</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Particl address.</source>
-        <translation>Sisestatud aadress "%1" ei ole korrektne Particl aadress.</translation>
+        <source>The entered address "%1" is not a valid Rhombus address.</source>
+        <translation>Sisestatud aadress "%1" ei ole korrektne Rhombus aadress.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -653,8 +653,8 @@
         <translation>Tere tulemast</translation>
     </message>
     <message>
-        <source>Particl</source>
-        <translation>Particl</translation>
+        <source>Rhombus</source>
+        <translation>Rhombus</translation>
     </message>
     <message>
         <source>Error</source>
@@ -729,8 +729,8 @@
         <translation>Ekspert</translation>
     </message>
     <message>
-        <source>Automatically open the Particl client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Particli kliendi pordi automaatne avamine ruuteris. Toimib, kui sinu ruuter aktsepteerib UPnP ühendust.</translation>
+        <source>Automatically open the Rhombus client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Rhombusi kliendi pordi automaatne avamine ruuteris. Toimib, kui sinu ruuter aktsepteerib UPnP ühendust.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -828,7 +828,7 @@
         <translation>Vorm</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Particl network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Rhombus network after a connection is established, but this process has not completed yet.</source>
         <translation>Kuvatav info ei pruugi olla ajakohane. Ühenduse loomisel süngitakse sinu rahakott automaatselt Bitconi võrgustikuga, kuid see toiming on hetkel lõpetamata.</translation>
     </message>
     <message>
@@ -1355,8 +1355,8 @@
         <translation>Maksepäring aegunud.</translation>
     </message>
     <message>
-        <source>Warning: Invalid Particl address</source>
-        <translation>Hoiatus: Ebakorrektne Particl aadress</translation>
+        <source>Warning: Invalid Rhombus address</source>
+        <translation>Hoiatus: Ebakorrektne Rhombus aadress</translation>
     </message>
     <message>
         <source>(no label)</source>
@@ -1439,8 +1439,8 @@
         <translation>&amp;Allkirjastamise teade</translation>
     </message>
     <message>
-        <source>The Particl address to sign the message with</source>
-        <translation>Particl aadress millega sõnum allkirjastada</translation>
+        <source>The Rhombus address to sign the message with</source>
+        <translation>Rhombus aadress millega sõnum allkirjastada</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -1471,8 +1471,8 @@
         <translation>Kopeeri praegune signatuur vahemällu</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Particl address</source>
-        <translation>Allkirjasta sõnum Particli aadressi sulle kuulumise tõestamiseks</translation>
+        <source>Sign the message to prove you own this Rhombus address</source>
+        <translation>Allkirjasta sõnum Rhombusi aadressi sulle kuulumise tõestamiseks</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -1491,12 +1491,12 @@
         <translation>&amp;Kinnita Sõnum</translation>
     </message>
     <message>
-        <source>The Particl address the message was signed with</source>
-        <translation>Particl aadress millega sõnum on allkirjastatud</translation>
+        <source>The Rhombus address the message was signed with</source>
+        <translation>Rhombus aadress millega sõnum on allkirjastatud</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Particl address</source>
-        <translation>Kinnita sõnum tõestamaks selle allkirjastatust määratud Particli aadressiga.</translation>
+        <source>Verify the message to ensure it was signed with the specified Rhombus address</source>
+        <translation>Kinnita sõnum tõestamaks selle allkirjastatust määratud Rhombusi aadressiga.</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>

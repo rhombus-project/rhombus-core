@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 The Particl Core developers
+// Copyright (c) 2017-2019 The Rhombus Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include <string>
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(extkey_tests, ParticlBasicTestingSetup)
+BOOST_FIXTURE_TEST_SUITE(extkey_tests, RhombusBasicTestingSetup)
 
 class FailTest
 {
@@ -196,14 +196,14 @@ void RunDeriveTests()
     std::vector<DeriveTestData> vMainNetPairs = {
         DeriveTestData(0,
             std::string("XPARHAr37YxmFP8wyjkaHAQWmp84GiyLikL7EL8j9BCx4LkB8Q1Bw5Kr8sA1GA3Ym53zNLcaxxFHr6u81JVTeCaD61c6fKS1YRAuti8Zu5SzJCjh"),
-            std::string("PPARTKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj")),
+            std::string("PRHOMKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj")),
         DeriveTestData(1,
             std::string("XPARHAt1XMcNYAwP5yxEEqHXkbawBq31u2WW5SPBRdw8j8tPjKCLeUJFoNhVYANn5Y2BkQrmYMZFBUteSXPFWSS47MyP2PckLRJNptsfPx99Hqsd"),
-            std::string("PPARTKPL4rp5WLnrYRpBPySBKNwQbcNxtP22g5PYFeVLri914xwnzewmxBH4dTMd6Xf578bi3sUnLpix65m2gENpWRdwGM5L7fM4Q4FU5StZaV2D")),
+            std::string("PRHOMKPL4rp5WLnrYRpBPySBKNwQbcNxtP22g5PYFeVLri914xwnzewmxBH4dTMd6Xf578bi3sUnLpix65m2gENpWRdwGM5L7fM4Q4FU5StZaV2D")),
 
         DeriveTestData(350,
             std::string("XPARHDuzfjhA9hhyH5g3X5bwjBkUAcZpJUfeF5T2UrnHvqsWYEKGFLcLtmaMcktytFiY1hnut6SxQkN6XqhtBJXCSbNuJXaQ26eyVaTZVZ5j37bL"),
-            std::string("PPARTNRKDEts7sZSjXXzgDkbHy6waPumHqBAqiTPJsLW4R87st4ibXFs3a9vi3uVdvy14rJQxqfKLKuqnVZboDCadnzgRR1TicCxDYke1jRB4hUk")),
+            std::string("PRHOMNRKDEts7sZSjXXzgDkbHy6waPumHqBAqiTPJsLW4R87st4ibXFs3a9vi3uVdvy14rJQxqfKLKuqnVZboDCadnzgRR1TicCxDYke1jRB4hUk")),
     };
 
     std::vector<DeriveTestData> vTestNetPairs = {
@@ -291,7 +291,7 @@ void RunSerialiseTests()
     sk.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, nTest8);
 
     eKey58.SetKey(sk.kp, CChainParams::EXT_PUBLIC_KEY);
-    BOOST_CHECK(eKey58.ToString() == "PPARTKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj");
+    BOOST_CHECK(eKey58.ToString() == "PRHOMKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj");
 
     eKey58.SetKeyV(sk.kp);
     BOOST_CHECK(eKey58.ToString() == "XPARHAr37YxmFP8wyjkaHAQWmp84GiyLikL7EL8j9BCx4LkB8Q1Bw5Kr8sA1GA3Ym53zNLcaxxFHr6u81JVTeCaD61c6fKS1YRAuti8Zu5SzJCjh");
@@ -458,7 +458,7 @@ void RunSerialiseTests()
     CExtKeyPair kp, kpT;
     CTxDestination dest;
 
-    BOOST_CHECK(0 == eKey58.Set58("PPARTKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj"));
+    BOOST_CHECK(0 == eKey58.Set58("PRHOMKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj"));
     kp = eKey58.GetKey();
     CBitcoinAddress addrB(kp);
     BOOST_CHECK(addrB.IsValid() == true);
@@ -467,7 +467,7 @@ void RunSerialiseTests()
     BOOST_CHECK(addr.IsValid() == true);
     BOOST_CHECK(addr.IsValid(CChainParams::EXT_SECRET_KEY) == false);
     BOOST_CHECK(addr.IsValid(CChainParams::EXT_PUBLIC_KEY) == true);
-    BOOST_CHECK(addr.ToString() == "PPARTKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj");
+    BOOST_CHECK(addr.ToString() == "PRHOMKMMf4AUDYzRSBcXSJZALbUXgWKHi6qdpy95yBmABuznU3keHFyNHfjaMT33ehuYwjx3RXort1j8d9AYnqyhAvdN168J4GBsM2ZHuTb91rsj");
     dest = addr.Get();
     BOOST_CHECK(dest.type() == typeid(CExtKeyPair));
     kpT = boost::get<CExtKeyPair>(dest);

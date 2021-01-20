@@ -2,14 +2,14 @@
 
 *.exe
 *.pdb
-src/particl
-src/particld
-src/particl-cli
-src/particl-tx
-src/particl-wallet
-src/test/test_particl
-src/test/test_particl_fuzzy
-src/qt/test/test_particl-qt
+src/rhombus
+src/rhombusd
+src/rhombus-cli
+src/rhombus-tx
+src/rhombus-wallet
+src/test/test_rhombus
+src/test/test_rhombus_fuzzy
+src/qt/test/test_rhombus-qt
 
 # autoreconf
 src/Makefile.in
@@ -54,11 +54,11 @@ src/qt/bitcoin-qt.creator.user
 src/qt/bitcoin-qt.files
 src/qt/bitcoin-qt.includes
 
-src/qt/particl-qt.config
-src/qt/particl-qt.creator
-src/qt/particl-qt.creator.user
-src/qt/particl-qt.files
-src/qt/particl-qt.includes
+src/qt/rhombus-qt.config
+src/qt/rhombus-qt.creator
+src/qt/rhombus-qt.creator.user
+src/qt/rhombus-qt.files
+src/qt/rhombus-qt.includes
 
 .deps
 .dirstamp
@@ -95,8 +95,8 @@ src/qt/particl-qt.includes
 *.qm
 Makefile
 !depends/Makefile
-particl-qt
-Particl-Qt.app
+rhombus-qt
+Rhombus-Qt.app
 background.tiff*
 
 # Qt Creator
@@ -104,7 +104,7 @@ Makefile.am.user
 
 # Unit-tests
 Makefile.test
-particl-qt_test
+rhombus-qt_test
 
 # Resources cpp
 qrc_*.cpp
@@ -117,7 +117,7 @@ build
 *.gcno
 *.gcda
 /*.info
-test_particl.coverage/
+test_rhombus.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -132,7 +132,7 @@ test/cache/*
 
 /doc/doxygen/
 
-libparticlconsensus.pc
+librhombusconsensus.pc
 contrib/devtools/split-debug.sh
 
 # Output from running db4 installation

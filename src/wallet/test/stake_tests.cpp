@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 The Particl Core developers
+// Copyright (c) 2017-2019 The Rhombus Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -26,7 +26,7 @@
 
 struct StakeTestingSetup: public TestingSetup {
     StakeTestingSetup(const std::string& chainName = CBaseChainParams::REGTEST):
-        TestingSetup(chainName, /* fParticlMode */ true)
+        TestingSetup(chainName, /* fRhombusMode */ true)
     {
         ECC_Start_Stealth();
         ECC_Start_Blinding();
