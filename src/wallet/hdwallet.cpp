@@ -234,7 +234,6 @@ bool CHDWallet::ProcessStakingSettings(std::string &sError)
     nStakeCombineThreshold = 1000 * COIN;
     nStakeSplitThreshold = 2000 * COIN;
     nMaxStakeCombine = 3;
-    nWalletDevFundCedePercent = gArgs.GetArg("-foundationdonationpercent", 0);
     rewardAddress = CBitcoinAddress();
     m_smsg_fee_rate_target = 0;
     m_smsg_difficulty_target = 0;
@@ -259,13 +258,6 @@ bool CHDWallet::ProcessStakingSettings(std::string &sError)
             try { nStakeSplitThreshold = AmountFromValue(json["stakesplitthreshold"]);
             } catch (std::exception &e) {
                 AppendError(sError, "\"stakesplitthreshold\" not an amount.");
-            }
-        }
-
-        if (!json["foundationdonationpercent"].isNull()) {
-            try { nWalletDevFundCedePercent = json["foundationdonationpercent"].get_int();
-            } catch (std::exception &e) {
-                AppendError(sError, "\"foundationdonationpercent\" not an integer.");
             }
         }
 
@@ -306,15 +298,6 @@ bool CHDWallet::ProcessStakingSettings(std::string &sError)
     if (nStakeSplitThreshold < nStakeCombineThreshold * 2 || nStakeSplitThreshold > 10000 * COIN) {
         AppendError(sError, "\"stakesplitthreshold\" must be >= 2x \"stakecombinethreshold\" and <= 10000.");
         nStakeSplitThreshold = nStakeCombineThreshold * 2;
-    }
-
-    if (nWalletDevFundCedePercent < 0) {
-        WalletLogPrintf("%s: Warning \"foundationdonationpercent\" out of range %d, clamped to %d\n", __func__, nWalletDevFundCedePercent, 0);
-        nWalletDevFundCedePercent = 0;
-    } else
-    if (nWalletDevFundCedePercent > 100) {
-        WalletLogPrintf("%s: \"Warning foundationdonationpercent\" out of range %d, clamped to %d\n", __func__, nWalletDevFundCedePercent, 100);
-        nWalletDevFundCedePercent = 100;
     }
 
     return true;

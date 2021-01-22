@@ -294,9 +294,6 @@ BOOST_AUTO_TEST_CASE(stake_test)
             LOCK(cs_main);
 
             // Reduce the reward
-            RegtestParams().SetCoinYearReward(1 * CENT);
-            BOOST_CHECK(Params().GetCoinYearReward(0) == 1 * CENT);
-
             CValidationState state;
             CCoinsViewCache view(&::ChainstateActive().CoinsTip());
             BOOST_REQUIRE(false == ConnectBlock(block, state, pindexDelete, view, chainparams, false));
@@ -304,11 +301,7 @@ BOOST_AUTO_TEST_CASE(stake_test)
             BOOST_CHECK(state.IsInvalid());
             BOOST_CHECK(state.GetRejectReason() == "bad-cs-amount");
             BOOST_CHECK(prevTipHash == ::ChainActive().Tip()->GetBlockHash());
-
-            // restore the reward
-            RegtestParams().SetCoinYearReward(2 * CENT);
-            BOOST_CHECK(Params().GetCoinYearReward(0) == 2 * CENT);
-
+            
             // block should connect now
             CValidationState clearstate;
             CCoinsViewCache &clearview = ::ChainstateActive().CoinsTip();

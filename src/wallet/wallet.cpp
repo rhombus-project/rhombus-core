@@ -163,15 +163,15 @@ std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const WalletLocati
         error = "Wallet loading failed.";
         return nullptr;
     }
-    if (fParticlMode && !((CHDWallet*)wallet.get())->Initialise()) {
-        error = "Particl wallet initialise failed.";
+    if (fRhombusMode && !((CHDWallet*)wallet.get())->Initialise()) {
+        error = "Rhombus wallet initialise failed.";
         return nullptr;
     }
 
     AddWallet(wallet);
     wallet->postInitProcess();
 
-    if (fParticlMode) {
+    if (fRhombusMode) {
         RestartStakingThreads();
     }
     return wallet;
@@ -218,7 +218,7 @@ WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& 
         error = "Wallet creation failed";
         return WalletCreationStatus::CREATION_FAILED;
     }
-    if (fParticlMode && !GetParticlWallet(wallet.get())->Initialise()) {
+    if (fRhombusMode && !GetRhombusWallet(wallet.get())->Initialise()) {
         error = "Wallet initialisation failed";
         return WalletCreationStatus::CREATION_FAILED;
     }
@@ -237,7 +237,7 @@ WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& 
             }
 
             // Set a seed for the wallet
-            if (fParticlMode && !!GetParticlWallet(wallet.get())->MakeDefaultAccount()) {
+            if (fRhombusMode && !!GetRhombusWallet(wallet.get())->MakeDefaultAccount()) {
                 error = "Error: MakeDefaultAccount failed";
                 return WalletCreationStatus::CREATION_FAILED;
             } else {
@@ -2051,7 +2051,7 @@ void CWalletTx::GetAmounts(std::list<COutputEntry>& listReceived,
     }
 
     // Sent/received.
-    if (tx->IsParticlVersion()) {
+    if (tx->IsRhombusVersion()) {
         for (unsigned int i = 0; i < tx->vpout.size(); ++i) {
             const CTxOutBase *txout = tx->vpout[i].get();
             if (!txout->IsStandardOutput()) {
@@ -2450,7 +2450,7 @@ CAmount CWalletTx::GetAvailableCredit(interfaces::Chain::Lock& locked_chain, boo
     for (unsigned int i = 0; i < tx->GetNumVOuts(); i++)
     {
         if (!pwallet->IsSpent(locked_chain, hashTx, i) && (allow_used_addresses || !pwallet->IsUsedDestination(hashTx, i))) {
-            nCredit += fParticlWallet ? pwallet->GetCredit(tx->vpout[i].get(), filter)
+            nCredit += fRhombusWallet ? pwallet->GetCredit(tx->vpout[i].get(), filter)
                                       : pwallet->GetCredit(tx->vout[i], filter);
             if (!MoneyRange(nCredit))
                 throw std::runtime_error(std::string(__func__) + " : value out of range");
@@ -2516,7 +2516,7 @@ bool CWalletTx::IsTrusted(interfaces::Chain::Lock& locked_chain) const
         if (parent == nullptr)
             return false;
 
-        if (tx->IsParticlVersion()) {
+        if (tx->IsRhombusVersion()) {
             const CTxOutBase *parentOut = parent->tx->vpout[txin.prevout.n].get();
             if (!(pwallet->IsMine(parentOut) & ISMINE_SPENDABLE)) {
                 return false;
@@ -4550,7 +4550,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     bool fFirstRun = true;
     // TODO: Can't use std::make_shared because we need a custom deleter but
     // should be possible to use std::allocate_shared.
-    std::shared_ptr<CWallet> walletInstance(fParticlMode
+    std::shared_ptr<CWallet> walletInstance(fRhombusMode
         ? std::shared_ptr<CWallet>(new CHDWallet(&chain, location, WalletDatabase::Create(location.GetPath())), ReleaseWallet)
         : std::shared_ptr<CWallet>(new CWallet(&chain, location, WalletDatabase::Create(location.GetPath())), ReleaseWallet));
 
@@ -4603,7 +4603,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     }
 
     // Upgrade to HD if explicit upgrade
-    if (gArgs.GetBoolArg("-upgradewallet", false) && !fParticlMode) {
+    if (gArgs.GetBoolArg("-upgradewallet", false) && !fRhombusMode) {
         LOCK(walletInstance->cs_wallet);
 
         // Do not upgrade versions to any version between HD_SPLIT and FEATURE_PRE_SPLIT_KEYPOOL unless already supporting HD_SPLIT
@@ -4646,7 +4646,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
     if (fFirstRun)
     {
         // ensure this wallet.dat can only be opened by clients supporting HD with chain split and expects no default key
-        if (fParticlMode) {
+        if (fRhombusMode) {
             if ((wallet_creation_flags & WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
                 //selective allow to set flags
                 walletInstance->SetWalletFlag(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
@@ -4802,7 +4802,7 @@ std::shared_ptr<CWallet> CWallet::CreateWalletFromFile(interfaces::Chain& chain,
         walletInstance->m_last_block_processed.SetNull();
     }
 
-    if (!fParticlMode) // Must rescan after hdwallet is loaded
+    if (!fRhombusMode) // Must rescan after hdwallet is loaded
     if (tip_height && *tip_height != rescan_height)
     {
         // We can't rescan beyond non-pruned blocks, stop and throw an error.
@@ -4964,7 +4964,7 @@ int CWalletTx::GetBlocksToMaturity(interfaces::Chain::Lock& locked_chain, const 
     int chain_depth = pdepth ? *pdepth : GetDepthInMainChain(locked_chain);
     //assert(chain_depth >= 0); // coinbase tx should not be conflicted
 
-    if (fParticlMode && (locked_chain.getHeight() < COINBASE_MATURITY * 2)) {
+    if (fRhombusMode && (locked_chain.getHeight() < COINBASE_MATURITY * 2)) {
         const Optional<int> blockheight = locked_chain.getBlockHeight(m_confirm.hashBlock);
         if (!blockheight) {
             return COINBASE_MATURITY;
@@ -5009,7 +5009,7 @@ std::vector<OutputGroup> CWallet::GroupOutputs(const std::vector<COutput>& outpu
 
             size_t ancestors, descendants;
             chain().getTransactionAncestry(output.tx->GetHash(), ancestors, descendants);
-            const CScript *pscript = output.tx->tx->IsParticlVersion()
+            const CScript *pscript = output.tx->tx->IsRhombusVersion()
                 ? output.tx->tx->vpout[output.i]->GetPScriptPubKey() : &output.tx->tx->vout[output.i].scriptPubKey;
             if (!single_coin && ExtractDestination(*pscript, dst)) {
                 // Limit output groups to no more than 10 entries, to protect

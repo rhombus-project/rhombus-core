@@ -239,9 +239,6 @@ void OutputToJSON(uint256 &txid, int i,
             if (s->GetCTFee(nValue)) {
                 entry.pushKV("ct_fee", ValueFromAmount(nValue));
             }
-            if (s->GetDevFundCfwd(nValue)) {
-                entry.pushKV("dev_fund_cfwd", ValueFromAmount(nValue));
-            }
             if (s->GetSmsgFeeRate(nValue)) {
                 entry.pushKV("smsgfeerate", ValueFromAmount(nValue));
             }

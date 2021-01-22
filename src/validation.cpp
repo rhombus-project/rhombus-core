@@ -1300,7 +1300,7 @@ bool ReadBlockFromDisk(CBlock& block, const FlatFilePos& pos, const Consensus::P
     if (fRhombusMode) {
         // only CheckProofOfWork for genesis blocks
         if (block.hashPrevBlock.IsNull()
-            && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams, 0, Params().GetLastImportHeight())) {
+            && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams)) {
             return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
         }
     } else {
@@ -2839,7 +2839,6 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         if (block.IsProofOfStake()) { // Only the genesis block isn't proof of stake
             CTransactionRef txCoinstake = block.vtx[0];
             CTransactionRef txPrevCoinstake = nullptr;
-            const DevFundSettings *pDevFundSettings = chainparams.GetDevFundSettings(block.nTime);
             const CAmount nCalculatedStakeReward = Params().GetProofOfStakeReward(pindex->pprev, nFees); // stake_test
 
             if (block.nTime >= consensus.smsg_fee_time) {
@@ -2891,76 +2890,10 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                 }
             }
 
-            if (!pDevFundSettings || pDevFundSettings->nMinDevStakePercent <= 0) {
-                if (nStakeReward < 0 || nStakeReward > nCalculatedStakeReward) {
-                    return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Coinstake pays too much(actual=%d vs calculated=%d)", __func__, nStakeReward, nCalculatedStakeReward), REJECT_INVALID, "bad-cs-amount");
-                }
-            } else {
-                assert(pDevFundSettings->nMinDevStakePercent <= 100);
-
-                CAmount nDevBfwd = 0, nDevCfwdCheck = 0;
-                CAmount nMinDevPart = (nCalculatedStakeReward * pDevFundSettings->nMinDevStakePercent) / 100;
-                CAmount nMaxHolderPart = nCalculatedStakeReward - nMinDevPart;
-                if (nMinDevPart < 0 || nMaxHolderPart < 0) {
-                    return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Bad coinstake split amount (foundation=%d vs reward=%d)", __func__, nMinDevPart, nMaxHolderPart), REJECT_INVALID, "bad-cs-amount");
-                }
-
-                if (pindex->pprev->nHeight > 0) { // Genesis block is pow
-                    if (!txPrevCoinstake
-                        && !coinStakeCache.GetCoinStake(pindex->pprev->GetBlockHash(), txPrevCoinstake)) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Failed to get previous coinstake.", __func__), REJECT_INVALID, "bad-cs-prev");
-                    }
-
-                    assert(txPrevCoinstake->IsCoinStake()); // Sanity check
-                    if (!txPrevCoinstake->GetDevFundCfwd(nDevBfwd)) {
-                        nDevBfwd = 0;
-                    }
-                }
-
-                if (pindex->nHeight % pDevFundSettings->nDevOutputPeriod == 0) {
-                    // Fund output must exist and match cfwd, cfwd data output must be unset
-                    // nStakeReward must == nDevBfwd + nCalculatedStakeReward
-
-                    if (nStakeReward != nDevBfwd + nCalculatedStakeReward) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Bad stake-reward (actual=%d vs expected=%d)", __func__, nStakeReward, nDevBfwd + nCalculatedStakeReward), REJECT_INVALID, "bad-cs-amount");
-                    }
-
-                    CTxDestination dfDest = CBitcoinAddress(pDevFundSettings->sDevFundAddresses).Get();
-                    if (dfDest.type() == typeid(CNoDestination)) {
-                        return error("%s: Failed to get foundation fund destination: %s.", __func__, pDevFundSettings->sDevFundAddresses);
-                    }
-                    CScript devFundScriptPubKey = GetScriptForDestination(dfDest);
-
-                    // Output 1 must be to the dev fund
-                    const CTxOutStandard *outputDF = txCoinstake->vpout[1]->GetStandardOutput();
-                    if (!outputDF) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Bad foundation fund output.", __func__), REJECT_INVALID, "bad-cs");
-                    }
-                    if (outputDF->scriptPubKey != devFundScriptPubKey) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Bad foundation fund output script.", __func__), REJECT_INVALID, "bad-cs");
-                    }
-                    if (outputDF->nValue < nDevBfwd + nMinDevPart) { // Max value is clamped already
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Bad foundation-reward (actual=%d vs minfundpart=%d)", __func__, nStakeReward, nDevBfwd + nMinDevPart), REJECT_INVALID, "bad-cs-fund-amount");
-                    }
-                    if (txCoinstake->GetDevFundCfwd(nDevCfwdCheck)) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Coinstake foundation cfwd must be unset.", __func__), REJECT_INVALID, "bad-cs-cfwd");
-                    }
-                } else {
-                    // Ensure cfwd data output is correct and nStakeReward is <= nHolderPart
-                    // cfwd must == nDevBfwd + (nCalculatedStakeReward - nStakeReward) // Allowing users to set a higher split
-
-                    if (nStakeReward < 0 || nStakeReward > nMaxHolderPart) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Bad stake-reward (actual=%d vs maxholderpart=%d)", __func__, nStakeReward, nMaxHolderPart), REJECT_INVALID, "bad-cs-amount");
-                    }
-                    CAmount nDevCfwd = nDevBfwd + nCalculatedStakeReward - nStakeReward;
-                    if (!txCoinstake->GetDevFundCfwd(nDevCfwdCheck)
-                        || nDevCfwdCheck != nDevCfwd) {
-                        return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Coinstake foundation fund carried forward mismatch (actual=%d vs expected=%d)", __func__, nDevCfwdCheck, nDevCfwd), REJECT_INVALID, "bad-cs-cfwd");
-                    }
-                }
-
-                coinStakeCache.InsertCoinStake(blockHash, txCoinstake);
+            if (nStakeReward < 0 || nStakeReward > nCalculatedStakeReward) {
+                return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Coinstake pays too much(actual=%d vs calculated=%d)", __func__, nStakeReward, nCalculatedStakeReward), REJECT_INVALID, "bad-cs-amount");
             }
+            
         } else {
             if (block.GetHash() != chainparams.GenesisBlock().GetHash()) {
                 return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: Block isn't coinstake or genesis.", __func__), REJECT_INVALID, "bad-cs");
@@ -4457,22 +4390,9 @@ unsigned int GetNextTargetRequired(const CBlockIndex *pindexLast)
     arith_uint256 bnProofOfWorkLimit;
     unsigned int nProofOfWorkLimit;
     int nHeight = pindexLast ? pindexLast->nHeight+1 : 0;
-
-    if (nHeight < (int)Params().GetLastImportHeight()) {
-        if (nHeight == 0) {
-            return arith_uint256("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").GetCompact();
-        }
-        int nLastImportHeight = (int) Params().GetLastImportHeight();
-        arith_uint256 nMaxProofOfWorkLimit = arith_uint256("000000000008ffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        arith_uint256 nMinProofOfWorkLimit = UintToArith256(consensus.powLimit);
-        arith_uint256 nStep = (nMaxProofOfWorkLimit - nMinProofOfWorkLimit) / nLastImportHeight;
-
-        bnProofOfWorkLimit = nMaxProofOfWorkLimit - (nStep * nHeight);
-        nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
-    } else {
-        bnProofOfWorkLimit = UintToArith256(consensus.powLimit);
-        nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
-    }
+    bnProofOfWorkLimit = UintToArith256(consensus.powLimit);
+    nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
+    
 
     if (pindexLast == nullptr)
         return nProofOfWorkLimit; // Genesis block
@@ -4611,15 +4531,6 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
                 return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cs-height", "block height mismatch in coinstake");
             }
 
-            std::vector<uint8_t> &vData = ((CTxOutData*)block.vtx[0]->vpout[0].get())->vData;
-            if (vData.size() > 8 && vData[4] == DO_VOTE) {
-                uint32_t voteToken;
-                memcpy(&voteToken, &vData[5], 4);
-
-                LogPrint(BCLog::HDWALLET, _("Block %d casts vote for option %u of proposal %u.\n").translated.c_str(),
-                    nHeight, voteToken >> 16, voteToken & 0xFFFF);
-            }
-
             // check witness merkleroot, TODO: should witnessmerkleroot be hashed?
             bool malleated = false;
             uint256 hashWitness = BlockWitnessMerkleRoot(block, &malleated);
@@ -4648,7 +4559,7 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
             }
         } else {
             bool fCheckPOW = true; // TODO: pass properly
-            if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams, nHeight, Params().GetLastImportHeight()))
+            if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
                 return state.Invalid(ValidationInvalidReason::BLOCK_INVALID_HEADER, false, REJECT_INVALID, "high-hash", "proof of work failed");
 
             // Enforce rule that the coinbase/ ends with serialized block height
@@ -4666,24 +4577,10 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
             return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cs-missing", "first tx is not coinstake");
         }
 
-        if (nHeight > 0 // skip genesis
-            && Params().GetLastImportHeight() >= (uint32_t)nHeight) {
-            // 2nd txn must be coinbase
-            if (block.vtx.size() < 2 || !block.vtx[1]->IsCoinBase()) {
-                return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb", "Second txn of import block must be coinbase");
-            }
-
-            // Check hash of genesis import txn matches expected hash.
-            uint256 txnHash = block.vtx[1]->GetHash();
-            if (!Params().CheckImportCoinbase(nHeight, txnHash)) {
-                return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb", "Incorrect outputs hash.");
-            }
-        } else {
-            // 2nd txn can't be coinbase if block height > GetLastImportHeight
-            if (block.vtx.size() > 1 && block.vtx[1]->IsCoinBase()) {
-                return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb-multiple", "unexpected coinbase");
-            }
+        if (block.vtx.size() > 1 && block.vtx[1]->IsCoinBase()) {
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-cb-multiple", "unexpected coinbase");
         }
+        
     } else {
         if (nHeight >= consensusParams.BIP34Height)
         {

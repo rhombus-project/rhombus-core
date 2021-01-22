@@ -41,26 +41,6 @@ struct ChainTxData {
     double dTxRate;   //!< estimated number of transactions per second after that timestamp
 };
 
-class CImportedCoinbaseTxn
-{
-public:
-    CImportedCoinbaseTxn(uint32_t nHeightIn, uint256 hashIn) : nHeight(nHeightIn), hash(hashIn) {};
-    uint32_t nHeight;
-    uint256 hash; // hash of output data
-};
-
-class DevFundSettings
-{
-public:
-    DevFundSettings(std::string sAddrTo, int nMinDevStakePercent_, int nDevOutputPeriod_)
-        : sDevFundAddresses(sAddrTo), nMinDevStakePercent(nMinDevStakePercent_), nDevOutputPeriod(nDevOutputPeriod_) {};
-
-    std::string sDevFundAddresses;
-    int nMinDevStakePercent; // [0, 100]
-    int nDevOutputPeriod; // dev fund output is created every n blocks
-    //CAmount nMinDevOutputSize; // if nDevOutputGap is -1, create a devfund output when value is > nMinDevOutputSize
-};
-
 /**
  * CChainParams defines various tweakable parameters of a given instance of the
  * Bitcoin system. There are three: the main network on which people trade goods
@@ -100,16 +80,9 @@ public:
     uint32_t GetTargetTimespan() const { return nTargetTimespan; }
 
     uint32_t GetStakeTimestampMask(int nHeight) const { return nStakeTimestampMask; }
-    int64_t GetCoinYearReward(int64_t nTime) const;
-
-    const DevFundSettings *GetDevFundSettings(int64_t nTime) const;
-    const std::vector<std::pair<int64_t, DevFundSettings> > &GetDevFundSettings() const {return vDevFundSettings;};
 
     int64_t GetProofOfStakeReward(const CBlockIndex *pindexPrev, int64_t nFees) const;
     int64_t GetMaxSmsgFeeRateDelta(int64_t smsg_fee_prev) const;
-
-    bool CheckImportCoinbase(int nHeight, uint256 &hash) const;
-    uint32_t GetLastImportHeight() const { return nLastImportHeight; }
 
     const CBlock& GenesisBlock() const { return genesis; }
     /** Default value for -checkmempool and -checkblockindex argument */
@@ -151,14 +124,6 @@ public:
 protected:
     CChainParams() {}
 
-    void SetLastImportHeight()
-    {
-        nLastImportHeight = 0;
-        for (auto cth : vImportedCoinbaseTxns) {
-            nLastImportHeight = std::max(nLastImportHeight, cth.nHeight);
-        }
-    }
-
     Consensus::Params consensus;
     CMessageHeader::MessageStartChars pchMessageStart;
     int nDefaultPort;
@@ -171,12 +136,6 @@ protected:
 
     uint32_t nStakeTimestampMask = (1 << 4) -1; // 4 bits, every kernel stake hash will change every 16 seconds
     int64_t nCoinYearReward = 2 * CENT; // 2% per year
-
-    std::vector<CImportedCoinbaseTxn> vImportedCoinbaseTxns;
-    uint32_t nLastImportHeight;       // set from vImportedCoinbaseTxns
-
-    std::vector<std::pair<int64_t, DevFundSettings> > vDevFundSettings;
-
 
     uint64_t nPruneAfterHeight;
     uint64_t m_assumed_blockchain_size;

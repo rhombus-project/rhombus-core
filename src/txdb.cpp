@@ -470,7 +470,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, 
                 if (fRhombusMode) {
                     // only CheckProofOfWork for genesis blocks
                     if (diskindex.hashPrev.IsNull() && !CheckProofOfWork(pindexNew->GetBlockHash(),
-                        pindexNew->nBits, Params().GetConsensus(), 0, Params().GetLastImportHeight()))
+                        pindexNew->nBits, Params().GetConsensus()))
                         return error("%s: CheckProofOfWork failed: %s", __func__, pindexNew->ToString());
                 } else
                 if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params().GetConsensus())) {

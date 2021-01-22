@@ -2645,8 +2645,7 @@ static void ParseOutputs(
     const std::string   &category_filter,
     bool                 fWithReward,
     bool                 fBech32,
-    bool                 hide_zero_coinstakes,
-    std::vector<CScript> &vDevFundScripts
+    bool                 hide_zero_coinstakes
 ) EXCLUSIVE_LOCKS_REQUIRED(pwallet->cs_wallet)
 {
     UniValue entry(UniValue::VOBJ);
@@ -2792,16 +2791,6 @@ static void ParseOutputs(
     if (fWithReward && !listStaked.empty()) {
         CAmount nOutput = wtx.tx->GetValueOut();
         CAmount nInput = 0;
-
-        // Remove dev fund outputs
-        if (wtx.tx->vpout.size() > 2 && wtx.tx->vpout[1]->IsStandardOutput()) {
-            for (const auto &s : vDevFundScripts) {
-                if (s == *wtx.tx->vpout[1]->GetPScriptPubKey()) {
-                    nOutput -= wtx.tx->vpout[1]->GetValue();
-                    break;
-                }
-            }
-        }
 
         for (const auto &vin : wtx.tx->vin) {
             if (vin.IsAnonInput()) {
@@ -3271,19 +3260,6 @@ static UniValue filtertransactions(const JSONRPCRequest &request)
         }
     }
 
-    std::vector<CScript> vDevFundScripts;
-    if (fWithReward) {
-        const auto v = Params().GetDevFundSettings();
-        for (const auto &s : v) {
-            CTxDestination dfDest = CBitcoinAddress(s.second.sDevFundAddresses).Get();
-            if (dfDest.type() == typeid(CNoDestination)) {
-                continue;
-            }
-            CScript script = GetScriptForDestination(dfDest);
-            vDevFundScripts.push_back(script);
-        }
-    }
-
     // for transactions and records
     UniValue transactions(UniValue::VARR);
 
@@ -3306,8 +3282,7 @@ static UniValue filtertransactions(const JSONRPCRequest &request)
                 category,
                 fWithReward,
                 fBech32,
-                hide_zero_coinstakes,
-                vDevFundScripts
+                hide_zero_coinstakes
             );
         tit++;
     }
@@ -3835,12 +3810,10 @@ static UniValue getstakinginfo(const JSONRPCRequest &request)
     UniValue obj(UniValue::VOBJ);
 
     int64_t nTipTime;
-    float rCoinYearReward;
     CAmount nMoneySupply;
     {
         LOCK(cs_main);
         nTipTime = ::ChainActive().Tip()->nTime;
-        rCoinYearReward = Params().GetCoinYearReward(nTipTime) / CENT;
         nMoneySupply = ::ChainActive().Tip()->nMoneySupply;
     }
 
@@ -3876,20 +3849,10 @@ static UniValue getstakinginfo(const JSONRPCRequest &request)
 
     obj.pushKV("errors", GetWarnings("statusbar"));
 
-    obj.pushKV("percentyearreward", rCoinYearReward);
     obj.pushKV("moneysupply", ValueFromAmount(nMoneySupply));
 
     if (pwallet->nReserveBalance > 0) {
         obj.pushKV("reserve", ValueFromAmount(pwallet->nReserveBalance));
-    }
-
-    if (pwallet->nWalletDevFundCedePercent > 0) {
-        obj.pushKV("walletfoundationdonationpercent", pwallet->nWalletDevFundCedePercent);
-    }
-
-    const DevFundSettings *pDevFundSettings = Params().GetDevFundSettings(nTipTime);
-    if (pDevFundSettings && pDevFundSettings->nMinDevStakePercent > 0) {
-        obj.pushKV("foundationdonationpercent", pDevFundSettings->nMinDevStakePercent);
     }
 
     obj.pushKV("currentblocksize", (uint64_t)nLastBlockSize);
@@ -6215,267 +6178,6 @@ static UniValue derivefromstealthaddress(const JSONRPCRequest &request)
     return result;
 };
 
-
-static UniValue setvote(const JSONRPCRequest &request)
-{
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    CHDWallet *const pwallet = GetRhombusWallet(wallet.get());
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp))
-        return NullUniValue;
-
-            RPCHelpMan{"setvote",
-                "\nSet voting token.\n"
-                "Wallet will include this token in staked blocks from height_start to height_end.\n"
-                "Set proposal and/or option to 0 to stop voting.\n"
-                "The last added option valid for the current chain height will be applied." +
-                HelpRequiringPassphrase(pwallet) + "\n",
-                {
-                    {"proposal", RPCArg::Type::NUM, RPCArg::Optional::NO, "The proposal to vote on."},
-                    {"option", RPCArg::Type::NUM, RPCArg::Optional::NO, "The option to vote for."},
-                    {"height_start", RPCArg::Type::NUM, RPCArg::Optional::NO, "Start voting at this block height."},
-                    {"height_end", RPCArg::Type::NUM, RPCArg::Optional::NO, "Stop voting at this block height."},
-                },
-                RPCResults{},
-                RPCExamples{
-            HelpExampleCli("setvote", "1 1 1000 2000") +
-            "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("setvote", "1, 1, 1000, 2000")
-                },
-            }.Check(request);
-
-    EnsureWalletIsUnlocked(pwallet);
-
-    // Make sure the results are valid at least up to the most recent block
-    // the user could have gotten from another RPC command prior to now
-    pwallet->BlockUntilSyncedToCurrentChain();
-
-    uint32_t issue = request.params[0].get_int();
-    uint32_t option = request.params[1].get_int();
-
-    if (issue > 0xFFFF)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Proposal out of range.");
-    if (option > 0xFFFF)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Option out of range.");
-
-    int nStartHeight = request.params[2].get_int();
-    int nEndHeight = request.params[3].get_int();
-
-    if (nEndHeight < nStartHeight)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "height_end must be after height_start.");
-
-    uint32_t voteToken = issue | (option << 16);
-
-    {
-        LOCK(pwallet->cs_wallet);
-
-        CHDWalletDB wdb(pwallet->GetDBHandle(), "r+");
-
-        std::vector<CVoteToken> vVoteTokens;
-
-        wdb.ReadVoteTokens(vVoteTokens);
-
-        CVoteToken v(voteToken, nStartHeight, nEndHeight, GetTime());
-        vVoteTokens.push_back(v);
-
-        if (!wdb.WriteVoteTokens(vVoteTokens))
-            throw JSONRPCError(RPC_WALLET_ERROR, "WriteVoteTokens failed.");
-
-        pwallet->LoadVoteTokens(&wdb);
-    }
-
-    UniValue result(UniValue::VOBJ);
-
-    if (issue < 1) {
-        result.pushKV("result", "Cleared vote token.");
-    } else {
-        result.pushKV("result", strprintf("Voting for option %u on proposal %u", option, issue));
-    }
-
-    result.pushKV("from_height", nStartHeight);
-    result.pushKV("to_height", nEndHeight);
-
-    return result;
-}
-
-static UniValue votehistory(const JSONRPCRequest &request)
-{
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    CHDWallet *const pwallet = GetRhombusWallet(wallet.get());
-    if (!EnsureWalletIsAvailable(pwallet, request.fHelp))
-        return NullUniValue;
-
-            RPCHelpMan{"votehistory",
-                "\nDisplay voting history of wallet.\n",
-                {
-                    {"current_only", RPCArg::Type::BOOL, /* default */ "false", "how only the currently active vote."},
-                },
-                RPCResult{
-            "[                   (array of json object)\n"
-            "  {\n"
-            "    \"proposal\" : n,      (numeric) the proposal id \n"
-            "    \"option\" : n,        (numeric) the option marked\n"
-            "    \"from_height\" : n,   (numeric) the starting chain height\n"
-            "    \"to_height\" : n,     (numeric) the ending chain height\n"
-            "  }\n"
-            "  ,...\n"
-            "]\n"
-                },
-                RPCExamples{
-            HelpExampleCli("votehistory", "true") +
-            "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("votehistory", "true")
-                },
-            }.Check(request);
-
-    // Make sure the results are valid at least up to the most recent block
-    // the user could have gotten from another RPC command prior to now
-    pwallet->BlockUntilSyncedToCurrentChain();
-
-    UniValue result(UniValue::VARR);
-
-    if (request.params.size() > 0) {
-        if (GetBool(request.params[0])) {
-            UniValue vote(UniValue::VOBJ);
-
-            int nNextHeight = ::ChainActive().Height() + 1;
-
-            for (auto i = pwallet->vVoteTokens.rbegin(); i != pwallet->vVoteTokens.rend(); ++i) {
-                auto &v = *i;
-                if (v.nEnd < nNextHeight
-                    || v.nStart > nNextHeight) {
-                    continue;
-                }
-                if ((v.nToken >> 16) < 1
-                    || (v.nToken & 0xFFFF) < 1) {
-                    continue;
-                }
-                UniValue vote(UniValue::VOBJ);
-                vote.pushKV("proposal", (int)(v.nToken & 0xFFFF));
-                vote.pushKV("option", (int)(v.nToken >> 16));
-                vote.pushKV("from_height", v.nStart);
-                vote.pushKV("to_height", v.nEnd);
-                result.push_back(vote);
-            }
-            return result;
-        }
-    }
-
-    std::vector<CVoteToken> vVoteTokens;
-    {
-        LOCK(pwallet->cs_wallet);
-
-        CHDWalletDB wdb(pwallet->GetDBHandle(), "r+");
-        wdb.ReadVoteTokens(vVoteTokens);
-    }
-
-    for (auto i = vVoteTokens.rbegin(); i != vVoteTokens.rend(); ++i) {
-        auto &v = *i;
-        UniValue vote(UniValue::VOBJ);
-        vote.pushKV("proposal", (int)(v.nToken & 0xFFFF));
-        vote.pushKV("option", (int)(v.nToken >> 16));
-        vote.pushKV("from_height", v.nStart);
-        vote.pushKV("to_height", v.nEnd);
-        vote.pushKV("added", v.nTimeAdded);
-        result.push_back(vote);
-    }
-
-    return result;
-}
-
-static UniValue tallyvotes(const JSONRPCRequest &request)
-{
-            RPCHelpMan{"tallyvotes",
-                "\nCount votes.\n",
-                {
-                    {"proposal", RPCArg::Type::NUM, RPCArg::Optional::NO, "The proposal id."},
-                    {"height_start", RPCArg::Type::NUM, RPCArg::Optional::NO, "The chain starting height."},
-                    {"height_end", RPCArg::Type::NUM, RPCArg::Optional::NO, "The chain ending height."},
-                },
-                RPCResult{
-            " {\n"
-            "   \"proposal\" : n,      (numeric) The proposal id \n"
-            "   \"option\" : n,        (numeric) The option marked\n"
-            "   \"height_start\" : n,  (numeric) The starting chain height\n"
-            "   \"height_end\" : n,    (numeric) The ending chain height\n"
-            "   \"blocks_counted\" : n,(numeric) The ending chain height\n"
-            "   \"Option x\": total, %,(string) The number of votes cast for option x.\n"
-            " }\n"
-                },
-                RPCExamples{
-            HelpExampleCli("tallyvotes", "1 2000 30000") +
-            "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("tallyvotes", "1, 2000, 30000")
-                },
-            }.Check(request);
-
-    int issue = request.params[0].get_int();
-    if (issue < 1 || issue >= (1 << 16))
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Proposal out of range.");
-
-    int nStartHeight = request.params[1].get_int();
-    int nEndHeight = request.params[2].get_int();
-
-    CBlock block;
-    const Consensus::Params& consensusParams = Params().GetConsensus();
-
-    std::map<int, int> mapVotes;
-    std::pair<std::map<int, int>::iterator, bool> ri;
-
-    int nBlocks = 0;
-    CBlockIndex *pindex = ::ChainActive().Tip();
-    if (pindex)
-    do {
-        if (pindex->nHeight < nStartHeight) {
-            break;
-        }
-        if (pindex->nHeight <= nEndHeight) {
-            if (!ReadBlockFromDisk(block, pindex, consensusParams)) {
-                continue;
-            }
-
-            if (block.vtx.size() < 1
-                || !block.vtx[0]->IsCoinStake()) {
-                continue;
-            }
-
-            std::vector<uint8_t> &vData = ((CTxOutData*)block.vtx[0]->vpout[0].get())->vData;
-            if (vData.size() < 9 || vData[4] != DO_VOTE) {
-                ri = mapVotes.insert(std::pair<int, int>(0, 1));
-                if (!ri.second) ri.first->second++;
-            } else {
-                uint32_t voteToken;
-                memcpy(&voteToken, &vData[5], 4);
-                int option = 0; // default to abstain
-
-                // count only if related to current issue:
-                if ((int) (voteToken & 0xFFFF) == issue) {
-                    option = (voteToken >> 16) & 0xFFFF;
-                }
-
-                ri = mapVotes.insert(std::pair<int, int>(option, 1));
-                if (!ri.second) ri.first->second++;
-            }
-
-            nBlocks++;
-        }
-    } while ((pindex = pindex->pprev));
-
-    UniValue result(UniValue::VOBJ);
-    result.pushKV("proposal", issue);
-    result.pushKV("height_start", nStartHeight);
-    result.pushKV("height_end", nEndHeight);
-    result.pushKV("blocks_counted", nBlocks);
-
-    float fnBlocks = (float) nBlocks;
-    for (auto &i : mapVotes)
-    {
-        std::string sKey = i.first == 0 ? "Abstain" : strprintf("Option %d", i.first);
-        result.pushKV(sKey, strprintf("%d, %.02f%%", i.second, ((float) i.second / fnBlocks) * 100.0));
-    };
-
-    return result;
-};
-
 static UniValue buildscript(const JSONRPCRequest &request)
 {
             RPCHelpMan{"buildscript",
@@ -8314,11 +8016,6 @@ static const CRPCCommand commands[] =
 
     { "wallet",             "transactionblinds",                &transactionblinds,             {"txnid"} },
     { "wallet",             "derivefromstealthaddress",         &derivefromstealthaddress,      {"stealthaddress","ephempubkey"} },
-
-
-    { "governance",         "setvote",                          &setvote,                       {"proposal","option","height_start","height_end"} },
-    { "governance",         "votehistory",                      &votehistory,                   {"current_only"} },
-    { "governance",         "tallyvotes",                       &tallyvotes,                    {"proposal","height_start","height_end"} },
 
     { "rawtransactions",    "buildscript",                      &buildscript,                   {"json"} },
     { "rawtransactions",    "createrawrhomtransaction",         &createrawrhomtransaction,      {"inputs","outputs","locktime","replaceable"} },

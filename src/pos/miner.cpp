@@ -128,98 +128,6 @@ bool CheckStake(CBlock *pblock)
     return true;
 };
 
-bool ImportOutputs(CBlockTemplate *pblocktemplate, int nHeight)
-{
-    LogPrint(BCLog::POS, "%s, nHeight %d\n", __func__, nHeight);
-
-    CBlock *pblock = &pblocktemplate->block;
-    if (pblock->vtx.size() < 1) {
-        return error("%s: Malformed block.", __func__);
-    }
-
-    fs::path fPath = GetDataDir() / "genesisOutputs.txt";
-    if (!fs::exists(fPath)) {
-        return error("%s: File not found 'genesisOutputs.txt'.", __func__);
-    }
-
-    const int nMaxOutputsPerTxn = 80;
-    FILE *fp;
-    errno = 0;
-    if (!(fp = fopen(fPath.string().c_str(), "rb"))) {
-        return error("%s - Can't open file, strerror: %s.", __func__, strerror(errno));
-    }
-
-    CMutableTransaction txn;
-    txn.nVersion = RHOMBUS_TXN_VERSION;
-    txn.SetType(TXN_COINBASE);
-    txn.nLockTime = 0;
-    txn.vin.push_back(CTxIn()); // null prevout
-
-    // scriptsig len must be > 2
-    const char *s = "import";
-    txn.vin[0].scriptSig = CScript() << std::vector<unsigned char>((const unsigned char*)s, (const unsigned char*)s + strlen(s));
-
-    int nOutput = 0, nAdded = 0;
-    char cLine[512];
-    char *pAddress, *pAmount, *token;
-
-    while (fgets(cLine, 512, fp)) {
-        cLine[511] = '\0'; // safety
-        size_t len = strlen(cLine);
-        while (isspace(cLine[len-1]) && len>0) {
-            cLine[len-1] = '\0', len--;
-        }
-
-        if (!(pAddress = strtok_r(cLine, ",", &token))
-            || !(pAmount = strtok_r(nullptr, ",", &token))) {
-            continue;
-        }
-
-        nOutput++;
-        if (nOutput <= nMaxOutputsPerTxn * (nHeight-1)) {
-            continue;
-        }
-
-        uint64_t amount;
-        if (!ParseUInt64(std::string(pAmount), &amount) || !MoneyRange(amount)) {
-            LogPrintf("Warning: %s - Skipping invalid amount: %s, %s\n", __func__, pAmount, strerror(errno));
-            continue;
-        }
-
-        std::string addrStr(pAddress);
-        CBitcoinAddress addr(addrStr);
-
-        CKeyID id;
-        if (!addr.IsValid()
-            || !addr.GetKeyID(id)) {
-            LogPrintf("Warning: %s - Skipping invalid address: %s\n", __func__, pAddress);
-            continue;
-        }
-
-        CScript script = CScript() << OP_DUP << OP_HASH160 << ToByteVector(id) << OP_EQUALVERIFY << OP_CHECKSIG;
-        OUTPUT_PTR<CTxOutStandard> txout = MAKE_OUTPUT<CTxOutStandard>();
-        txout->nValue = amount;
-        txout->scriptPubKey = script;
-        txn.vpout.push_back(txout);
-
-        nAdded++;
-        if (nAdded >= nMaxOutputsPerTxn) {
-            break;
-        }
-    }
-
-    fclose(fp);
-
-    uint256 hash = txn.GetHash();
-    if (!Params().CheckImportCoinbase(nHeight, hash)) {
-        return error("%s - Incorrect outputs hash.", __func__);
-    }
-
-    pblock->vtx.insert(pblock->vtx.begin()+1, MakeTransactionRef(txn));
-
-    return true;
-};
-
 void StartThreadStakeMiner()
 {
     nMinStakeInterval = gArgs.GetArg("-minstakeinterval", 0);
@@ -309,8 +217,6 @@ void ThreadStakeMiner(size_t nThreadID, std::vector<std::shared_ptr<CWallet>> &v
 
     int nBestHeight; // TODO: set from new block signal?
     int64_t nBestTime;
-
-    int nLastImportHeight = Params().GetLastImportHeight();
 
     if (!gArgs.GetBoolArg("-staking", true)) {
         LogPrint(BCLog::POS, "%s: -staking is false.\n", __func__);
@@ -430,14 +336,6 @@ void ThreadStakeMiner(size_t nThreadID, std::vector<std::shared_ptr<CWallet>> &v
                     fIsStaking = false;
                     nWaitFor = std::min(nWaitFor, (size_t)nMinerSleep);
                     LogPrint(BCLog::POS, "%s: Couldn't create new block.\n", __func__);
-                    continue;
-                }
-
-                if (nBestHeight + 1 <= nLastImportHeight
-                    && !ImportOutputs(pblocktemplate.get(), nBestHeight + 1)) {
-                    fIsStaking = false;
-                    nWaitFor = std::min(nWaitFor, (size_t)30000);
-                    LogPrint(BCLog::POS, "%s: ImportOutputs failed.\n", __func__);
                     continue;
                 }
             }
