@@ -14,6 +14,10 @@
 
 #include <consensus/params.h>
 
+extern int64_t EXPLOIT_FIX_HF1_TIME;
+static const bool DEFAULT_ACCEPT_ANON_TX = false;
+static const bool DEFAULT_ACCEPT_BLIND_TX = false;
+
 /** "reject" message codes */
 static const unsigned char REJECT_MALFORMED = 0x01;
 static const unsigned char REJECT_INVALID = 0x10;
@@ -167,6 +171,9 @@ public:
     bool fIncDataOutputs = false; // per block
     int m_spend_height = 0;
 
+    bool m_exploit_fix_1 = false;
+    bool m_exploit_fix_2 = false;
+
     void SetStateInfo(int64_t time, int spend_height, const Consensus::Params& consensusParams)
     {
         fEnforceSmsgFees = time >= consensusParams.nPaidSmsgTime;
@@ -176,6 +183,8 @@ public:
         if (spend_height > -1) {
             m_spend_height = spend_height; // Pass through connectblock->checkblock
         }
+        m_exploit_fix_1 = time >= consensusParams.exploit_fix_1_time;
+        m_exploit_fix_2 = time >= consensusParams.exploit_fix_2_time;
     }
 
     int nodeId;

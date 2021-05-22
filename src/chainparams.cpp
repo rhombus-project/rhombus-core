@@ -258,6 +258,8 @@ public:
         consensus.bulletproof_time = 0x5F98A5A3;        // 2020-10-27 12:00:00
         consensus.rct_time = 0x5F98A5A3;                // 2020-10-27 12:00:00
         consensus.smsg_difficulty_time = 0x5F98A5A3;    // 2020-10-27 12:00:00
+        consensus.exploit_fix_1_time = 1621872000;      // 2021-05-24 12:00:00
+        consensus.exploit_fix_2_time = 1621958400;      // 2021-05-25 12:00:00
 
         consensus.smsg_fee_period = 5040;
         consensus.smsg_fee_funding_tx_per_k = 200000;
@@ -416,6 +418,8 @@ public:
         consensus.bulletproof_time = 0x5F98A5A3;           // 2020-10-27 12:00:00
         consensus.rct_time = 0;
         consensus.smsg_difficulty_time = 0x5F98A5A3;           // 2020-10-27 12:00:00
+        consensus.exploit_fix_1_time = 1621872000;      // 2021-05-24 12:00:00
+        consensus.exploit_fix_2_time = 1621958400;      // 2021-05-25 12:00:00
 
         consensus.smsg_fee_period = 5040;
         consensus.smsg_fee_funding_tx_per_k = 200000;

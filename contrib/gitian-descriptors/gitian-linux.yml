@@ -1,5 +1,5 @@
 ---
-name: "rhombus-linux-0.21.0.0"
+name: "rhombus-linux-0.21.1.0"
 enable_cache: true
 sudo: true
 distro: "ubuntu"

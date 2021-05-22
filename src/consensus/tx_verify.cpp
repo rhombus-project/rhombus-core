@@ -433,6 +433,11 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
     // reset per tx
     state.fHasAnonOutput = false;
     state.fHasAnonInput = false;
+    bool spends_post_fork_blinded = false;
+
+    const Consensus::Params& consensusParams = ::Params().GetConsensus();
+    size_t min_ring_size = consensusParams.m_max_ringsize;
+    size_t max_ring_size = consensusParams.m_min_ringsize;
 
     bool is_rhombus_tx = tx.IsRhombusVersion();
     if (is_rhombus_tx && tx.vin.size() < 1) { // early out
@@ -447,14 +452,43 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
     }
 
     std::vector<const secp256k1_pedersen_commitment*> vpCommitsIn, vpCommitsOut;
-    size_t nStandard = 0, nCt = 0, nRingCT = 0;
+    size_t nStandard = 0, nCt = 0, nRingCTInputs = 0, nRCTPrevouts = 0;
     CAmount nValueIn = 0;
     CAmount nFees = 0;
     for (unsigned int i = 0; i < tx.vin.size(); i++)
     {
         if (tx.vin[i].IsAnonInput()) {
             state.fHasAnonInput = true;
-            nRingCT++;
+            nRingCTInputs++;
+            const std::vector<uint8_t> &vMI = tx.vin[i].scriptWitness.stack[0];
+            uint32_t nInputs, nRingSize;
+            tx.vin[i].GetAnonInfo(nInputs, nRingSize);
+
+            if (nInputs < 1 || nInputs > consensusParams.m_max_anon_inputs) {
+                return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-anon-num-inputs");
+            }
+            if (nRingSize < consensusParams.m_min_ringsize || nRingSize > consensusParams.m_max_ringsize) {
+                return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-anon-ringsize");
+            }
+            if (min_ring_size > nRingSize) {
+                min_ring_size = nRingSize;
+            }
+            if (max_ring_size < nRingSize) {
+                max_ring_size = nRingSize;
+            }
+
+            size_t ofs = 0, nB = 0;
+            for (size_t k = 0; k < nInputs; ++k)
+            for (size_t i = 0; i < nRingSize; ++i) {
+                nRCTPrevouts++;
+                int64_t nIndex = 0;
+                if (0 != GetVarInt(vMI, ofs, (uint64_t&)nIndex, nB)) {
+                    return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-anonin-extract-i");
+                }
+                ofs += nB;
+
+                spends_post_fork_blinded = true;
+            }
             continue;
         }
 
@@ -493,6 +527,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
             if (coin.nType == OUTPUT_CT) {
                 vpCommitsIn.push_back(&coin.commitment);
                 nCt++;
+                spends_post_fork_blinded = true;
             } else {
                 return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-input-type");
             }
@@ -504,20 +539,25 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         }
     }
 
-    if ((nStandard > 0) + (nCt > 0) + (nRingCT > 0) > 1) {
+    if (spends_post_fork_blinded && min_ring_size < consensusParams.m_min_ringsize_post_hf2) {
+        return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-anon-ringsize");
+    }
+
+    if ((nStandard > 0) + (nCt > 0) + (nRingCTInputs > 0) > 1) {
         return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "mixed-input-types");
     }
 
-    size_t nRingCTInputs = nRingCT;
+    size_t nCTOutputs = 0, nRingCTOutputs = 0;
     // GetPlainValueOut adds to nStandard, nCt, nRingCT
-    CAmount nPlainValueOut = tx.GetPlainValueOut(nStandard, nCt, nRingCT);
-    state.fHasAnonOutput = nRingCT > nRingCTInputs;
+    CAmount nPlainValueOut = tx.GetPlainValueOut(nStandard, nCTOutputs, nRingCTOutputs);
+    nCt += nCTOutputs;
+    state.fHasAnonOutput = nRingCTOutputs > 0;
 
     txfee = 0;
     if (is_rhombus_tx) {
         if (!tx.IsCoinStake()) {
             // Tally transaction fees
-            if (nCt > 0 || nRingCT > 0) {
+            if (nCt > 0 || nRingCTOutputs > 0 || nRingCTInputs > 0) {
                 if (!tx.GetCTFee(txfee)) {
                     return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: bad-fee-output", __func__), REJECT_INVALID, "bad-fee-output");
                 }
@@ -542,7 +582,6 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
             CAmount nTotalMsgFees = tx.GetTotalSMSGFees();
             if (nTotalMsgFees > 0) {
                 size_t nTxBytes = GetVirtualTransactionSize(tx);
-                const Consensus::Params& consensusParams = ::Params().GetConsensus();
                 CFeeRate fundingTxnFeeRate = CFeeRate(consensusParams.smsg_fee_funding_tx_per_k);
                 CAmount nTotalExpectedFees = nTotalMsgFees + fundingTxnFeeRate.GetFee(nTxBytes);
 
@@ -558,7 +597,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         } else {
             // Return stake reward in txfee
             txfee = nPlainValueOut - nValueIn;
-            if (nCt > 0 || nRingCT > 0) { // Counters track both outputs and inputs
+             if (nCt > 0 || nRingCTOutputs > 0 || nRingCTInputs > 0) {
                 return state.Invalid(ValidationInvalidReason::CONSENSUS, error("%s: non-standard elements in coinstake", __func__),
                     REJECT_INVALID, "bad-coinstake-output");
             }
@@ -577,7 +616,23 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         }
     }
 
-    if (nCt > 0 && nRingCT == 0) {
+    if ((nCt > 0 || nRingCTOutputs > 0) && nRingCTInputs == 0) {
+        bool default_accept_anon = state.m_exploit_fix_2 ? true : DEFAULT_ACCEPT_ANON_TX;
+        bool default_accept_blind = state.m_exploit_fix_2 ? true : DEFAULT_ACCEPT_BLIND_TX;
+
+        if (state.m_exploit_fix_1 &&
+            nRingCTOutputs > 0 &&
+            !gArgs.GetBoolArg("-acceptanontxn", default_accept_anon)) {
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-anon-disabled");
+        }
+        if (state.m_exploit_fix_1 &&
+            nCt > 0 &&
+            !gArgs.GetBoolArg("-acceptblindtxn", default_accept_blind)) {
+            return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "bad-txns-blind-disabled");
+        }
+        if (!state.m_exploit_fix_1 && nCt == 0) {
+            return true;
+        }
         nPlainValueOut += txfee;
 
         if (!MoneyRange(nPlainValueOut)) {
@@ -589,8 +644,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
 
         // commitments must sum to 0
         secp256k1_pedersen_commitment plainInCommitment, plainOutCommitment;
-        uint8_t blindPlain[32];
-        memset(blindPlain, 0, 32);
+        uint8_t blindPlain[32] = {0};
         if (nValueIn > 0) {
             if (!secp256k1_pedersen_commit(secp256k1_ctx_blind, &plainInCommitment, blindPlain, (uint64_t) nValueIn, &secp256k1_generator_const_h, &secp256k1_generator_const_g)) {
                 return state.Invalid(ValidationInvalidReason::CONSENSUS, false, REJECT_INVALID, "commit-failed");
