@@ -258,8 +258,8 @@ public:
         consensus.bulletproof_time = 0x5F98A5A3;        // 2020-10-27 12:00:00
         consensus.rct_time = 0x5F98A5A3;                // 2020-10-27 12:00:00
         consensus.smsg_difficulty_time = 0x5F98A5A3;    // 2020-10-27 12:00:00
-        consensus.exploit_fix_1_time = 1621872000;      // 2021-05-24 12:00:00
-        consensus.exploit_fix_2_time = 1621958400;      // 2021-05-25 12:00:00
+        consensus.exploit_fix_1_time = 1621958400;      // 2021-05-27 12:00:00
+        consensus.exploit_fix_2_time = 1622217600;      // 2021-05-28 12:00:00
 
         consensus.smsg_fee_period = 5040;
         consensus.smsg_fee_funding_tx_per_k = 200000;
@@ -360,14 +360,15 @@ public:
         checkpointData = {
             {
                 {0, uint256S("00006c324b2f2fd4d570106fa8ff35bb2cb5e18c26ffcd16585d85dab252e897")},
+                {57500, uint256S("4b8acc3056ec2602332ecb3ef7bd5e0f0f762aad38e23b970a015287781a6689")},
             }
         };
 
         chainTxData = ChainTxData {
-            // Data from rpc: getchaintxstats 4096 c330a61e218b06d3d567c459b54e83ab682a366fc00b77d69dd78c6ed9655a2e
-            /* nTime    */ 0,
-            /* nTxCount */ 0,
-            /* dTxRate  */ 0.000
+            // Data from rpc: getchaintxstats 4096 4b8acc3056ec2602332ecb3ef7bd5e0f0f762aad38e23b970a015287781a6689
+            /* nTime    */ 1621317664,
+            /* nTxCount */ 58375,
+            /* dTxRate  */ 0.006050656660412758
         };
     }
 
@@ -418,8 +419,8 @@ public:
         consensus.bulletproof_time = 0x5F98A5A3;           // 2020-10-27 12:00:00
         consensus.rct_time = 0;
         consensus.smsg_difficulty_time = 0x5F98A5A3;           // 2020-10-27 12:00:00
-        consensus.exploit_fix_1_time = 1621872000;      // 2021-05-24 12:00:00
-        consensus.exploit_fix_2_time = 1621958400;      // 2021-05-25 12:00:00
+        consensus.exploit_fix_1_time = 1621958400;      // 2021-05-27 12:00:00
+        consensus.exploit_fix_2_time = 1622217600;      // 2021-05-28 12:00:00
 
         consensus.smsg_fee_period = 5040;
         consensus.smsg_fee_funding_tx_per_k = 200000;
